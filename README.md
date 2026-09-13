@@ -7,6 +7,9 @@
 
 - Team communication is done through a Discord server. Here, each teammate will notify others of their work prior to pushing to repository. Coordination will be done here as well.
 - A pull request is "done" when two conditions are met: the first condition being that the tests concerning the change pass (if applicable), the second condition being that at least one other team member reviews the proposed changes and verifies them.
+- We will divide work evenly and make sure each team member has assigned responsibilities for every sprint before we start working.
+- We will aim to finish individual tasks at least 24 hours before the sprint deadline to leave enough time for reviews and last minute fixes.
+- If we disagree on an idea or implementation, we will discuss possible options as a team and try to reach a consensus together.
 
 # Project Domain
 
