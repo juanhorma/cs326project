@@ -2,6 +2,7 @@
 
 - Juan Hormaechea (juanhorma)
 - Amita Vellal (avellal20)
+- Jingpei Wu (Gingpui-Ng)
 
 # Working Agreement
 
