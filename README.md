@@ -14,7 +14,6 @@
 
 # Project Domain
 
-Juan's idea (placeholder):
 The project will consist of a web application that allows scuba divers and free divers record and save details about their dives, such as date, total dive time, equipment used, decompression time (if applicable), maximum depth...
 
 Who benefits from this application: divers of all kinds, no matter if they free dive, scuba dive, fresh water dive or ocean dive
