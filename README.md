@@ -1,13 +1,16 @@
 # Contributors
 
-- Juan Hormaechea (juanhorma)
-- Amita Vellal (avellal20)
-- Jingpei Wu (Gingpui-Ng)
-- Hope Roundcount (hroundcountUMASS)
+| Name            | GitHub Username  |
+| --------------- | ---------------- |
+| Juan Hormaechea | juanhorma        |
+| Amita Vellal    | avellal20        |
+| Jingpei Wu      | Gingpui-Ng       |
+| Hope Roundcount | hroundcountUMASS |
 
 # Working Agreement
 
 - Team communication is done through a Discord server. Here, each teammate will notify others of their work prior to pushing to repository. Coordination will be done here as well.
+  - Communication is the most important for teamwork. Check the Discord team channel every day. Reply the message which @you in 24h. If meet any issue/problem always speak up to let the teammates know.
 - A pull request is "done" when two conditions are met: the first condition being that the tests concerning the change pass (if applicable), the second condition being that at least one other team member reviews the proposed changes and verifies them.
 - We will divide work evenly and make sure each team member has assigned responsibilities for every sprint before we start working. Individual tasks should be completed at least one day before the sprint deadline to leave enough time for reviews and last minute fixes.
 - If we disagree on an idea or implementation, we will discuss possible options as a team and try to reach a consensus together.
