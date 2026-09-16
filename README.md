@@ -2,6 +2,7 @@
 
 - Juan Hormaechea (juanhorma)
 - Amita Vellal (avellal20)
+- Hope Roundcount (hroundcountUMASS)
 
 # Working Agreement
 
