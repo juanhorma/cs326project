@@ -11,13 +11,6 @@ app.get("/", (req, res) => {
 // Dive statistics page
 app.get("/stats", (req, res) => {
   res.send(
-    "View your dive statistics, including total dives, average depth, maximum and minimum depths, dive times, and most common dive modality.",
-  );
-});
-
-// Dive statistics page
-app.get("/stats", (req, res) => {
-  res.send(
     "View your dive statistics, including total number of dives, average depth reached, dive times, maximum and minimum depths, and most common dive modality.",
   );
 });
