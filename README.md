@@ -25,21 +25,21 @@ Problem it addresses: the need for divers to be able to quickly record and save 
 
 # How to start
 1. On your machine, open your terminal of choice in the directory in which you want the repo, and run the command
-```bash
-git clone https://github.com/juanhorma/cs326project.git
-```
+   ```bash
+   git clone https://github.com/juanhorma/cs326project.git
+   ```
 2. After clone, run the command
-```bash
-cd cs326project
-```
+   ```bash
+   cd cs326project
+   ```
 3. You are at the project directory now. Then run
-```bash
-npm install
-```
-to install all the dependencies needed for this project.
+   ```bash
+   npm install
+   ```
+   to install all the dependencies needed for this project.
 4. Then run
-```bash
-npm start
-```
-to start the server.
+   ```bash
+   npm start
+   ```
+   to start the server.
 5. Then open http://localhost:3000 in your browser.
