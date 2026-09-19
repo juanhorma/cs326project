@@ -28,12 +28,18 @@ Problem it addresses: the need for divers to be able to quickly record and save 
 ```bash
 git clone https://github.com/juanhorma/cs326project.git
 ```
-2. After clone, still at the terminal and go to the directory using `cd` your directory path (example: cd /user/folder). Then run
+2. After clone, run the command
+```bash
+cd cs326project
+```
+3. You are at the project directory now. Then run
 ```bash
 npm install
 ```
-3. Then run
+to install all the dependencies needed for this project.
+4. Then run
 ```bash
 npm start
 ```
-4. Then open http://localhost:3000 in your browser.
+to start the server.
+5. Then open http://localhost:3000 in your browser.
