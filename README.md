@@ -22,3 +22,18 @@ The project will consist of a web application that allows scuba divers and free 
 Who benefits from this application: divers of all kinds, no matter if they free dive, scuba dive, fresh water dive or ocean dive
 
 Problem it addresses: the need for divers to be able to quickly record and save all details about their dives on a frictionless and easily accessible platform, avoiding having to write down on paper or deal with formatting concerns on text editors.
+
+# How to start
+1. On your machine, open your terminal of choice in the directory in which you want the repo, and run the command
+```bash
+git clone https://github.com/juanhorma/cs326project.git
+```
+2. After clone, still at the terminal and go to the directory using `cd` your directory path (example: cd /user/folder). Then run
+```bash
+npm install
+```
+3. Then run
+```bash
+npm start
+```
+4. Then open http://localhost:3000 in your browser.
