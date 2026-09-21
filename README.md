@@ -19,11 +19,12 @@
 
 The project will consist of a web application that allows scuba divers and free divers record and save details about their dives, such as date, total dive time, equipment used, decompression time (if applicable), maximum depth...
 
-Who benefits from this application: divers of all kinds, no matter if they free dive, scuba dive, fresh water dive or ocean dive
+Divers of all kinds, no matter if they free dive, scuba dive, fresh water dive or ocean dive will benefit from this application, which addresses a problem that has to do with the need for divers to be able to quickly record and save all details about their dives on a frictionless and easily accessible platform, avoiding having to write down on paper or deal with formatting concerns on text editors.
 
-Problem it addresses: the need for divers to be able to quickly record and save all details about their dives on a frictionless and easily accessible platform, avoiding having to write down on paper or deal with formatting concerns on text editors.
+This project domain satisfies the Computing for the Common Good objectives, as it proposes the use of technologies within the field of computing to solve a real, tangible problem people face around the world.
 
 # How to start
+
 1. On your machine, open your terminal of choice in the directory in which you want the repo, and run the command
    ```bash
    git clone https://github.com/juanhorma/cs326project.git
