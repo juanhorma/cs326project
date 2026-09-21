@@ -21,9 +21,13 @@ The project will consist of a web application that allows scuba divers and free 
 
 Divers of all kinds, no matter if they free dive, scuba dive, fresh water dive or ocean dive will benefit from this application, which addresses a problem that has to do with the need for divers to be able to quickly record and save all details about their dives on a frictionless and easily accessible platform, avoiding having to write down on paper or deal with formatting concerns on text editors.
 
-This project domain satisfies the Computing for the Common Good objectives, as it proposes the use of technologies within the field of computing to solve a real, tangible problem people face around the world.
+This project domain satisfies the Computing for the Common Good objectives, as it proposes the use of technologies within the field of computing to solve a real, tangible problem people face around the world. This project is not for us, but rather for a real, specific group of people whose safety and comfort will be improved through the use of this app. A potential diver will no longer have to deal with physical copies that get lost or troublesome, hard-to-use software to keep a record of their dives. This app is what gives the diving community a specific, tailor-made tool to improve their experience.
 
-# How to start
+# What this app is exactly and how to use it
+
+This is a web application designed for divers to be able to log information about their dives and access this information quickly and easily. It features a simple UI, with forms designed to record and save all details about your latest dive. It also provides general statistics about your diving journey.
+
+Follow these steps to use it:
 
 1. On your machine, open your terminal of choice in the directory in which you want the repo, and run the command
    ```bash
