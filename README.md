@@ -37,14 +37,29 @@ Follow these steps to use it:
    ```bash
    cd cs326project
    ```
-3. You are at the project directory now. Then run
+3. At this point, you should make sure you have npm installed before moving on to project dependencies. Follow these steps: 
+   - npm (acronym for Node Package Manager) is included with Node.js, which you can install from the official Node.js website, https://nodejs.org/en/download. 
+   - Select the long-term support (LTS) version for your operating system, and download. 
+   - Run the installer. Add Node.js to your system PATH if prompted.
+   - Close and reopen your terminal. 
+   - Verify that npm is installed and functioning using: 
+   ```bash
+   node --version
+   ```
+   and 
+   ```bash
+   npm --version
+   ```
+   - You should get a version number for both of these if they installed correctly. 
+
+4. You should have npm installed now, and you should still be in your project directory.  Run: 
    ```bash
    npm install
    ```
    to install all the dependencies needed for this project.
-4. Then run
+5. Then run
    ```bash
    npm start
    ```
    to start the server.
-5. Then open http://localhost:3000 in your browser.
+6. Then open http://localhost:3000 in your browser.
