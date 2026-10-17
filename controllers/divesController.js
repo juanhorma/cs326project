@@ -1,5 +1,14 @@
+import * as divesService from "../services/divesService.js";
+
 export const create = async (req, res) => {
-  res.status(501).json({
-    message: "Create dive not implemented yet.",
-  });
+  const result = await divesService.createDive(req.body);
+
+  if (!result.ok) {
+    res.status(result.error.status).json({
+      error: result.error.message,
+    });
+    return;
+  }
+
+  res.status(201).json(result.value);
 };
