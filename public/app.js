@@ -1,6 +1,7 @@
 const form = document.querySelector("#dive-entry");
 const list = document.querySelector("#dives");
 const errorMessage = document.querySelector("#form-error");
+errorMessage.style.color = "white";
 
 const buildDiveListItem = (dive) => {
   const keyNames = {
@@ -43,7 +44,7 @@ const buildDiveListItem = (dive) => {
   for (const [key, keyAlias] of Object.entries(keyNames)) {
     if (dive[key] && key != "date" && key != "diveTime" && key != "maxDepth") {
       const fullContentElement = document.createElement("h3");
-      h3.textContent = `${keyAlias} : ${dive[key]}`;
+      fullContentElement.textContent = `${keyAlias} : ${dive[key]}`;
       fullContent.append(fullContentElement);
     }
   }
