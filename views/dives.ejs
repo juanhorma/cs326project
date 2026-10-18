@@ -2,35 +2,77 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/style.css">
     <title>DIVELOG</title>
+    <%# title specific to this page%>
   </head>
-
   <body>
-    <main>
-      <h1>Add a Dive Entry</h1>
+      <h1 style="color: white;">Dive Logger</h1>
 
       <form id="dive-entry">
-        <input type="date" name="date" />
+        <input type="date" name="date" required/>
         <input
           type="number"
           name="diveTime"
           placeholder="Dive time in minutes"
+          required
         />
-        <input type="number" name="maxDepth" placeholder="Maximum depth" />
+        <input type="number" name="maxDepth" placeholder="Maximum depth (m)" required/>
         <input type="text" name="location" placeholder="Location" />
         <input type="text" name="equipment" placeholder="Equipment used" />
         <input
           type="number"
           name="decompressionTime"
-          placeholder="Decompression time"
+          placeholder="Decompression time in minutes"
         />
         <input type="text" name="notes" placeholder="Notes" />
         <button type="submit">Add dive entry</button>
       </form>
 
+
       <p id="form-error"></p>
-      <div id="saved-dive"></div>
-    </main>
+
+
+      <ul id="dives">
+      <%
+          const keyNames = {
+            "date": "Date",
+            "diveTime": "Dive Time",
+            "maxDepth": "Maximum Depth",
+            "location": "Location",
+            "equipment": "Equipment",
+            "decompressionTime": "Decompression Time",
+            "notes": "Notes"
+          };
+        %>
+        <% dives.forEach((dive) => {%>
+          <li class="dive-item">
+            <details class="dive-details" name="dives-accordion">
+              <summary class="dive-summary">
+                <div class="summary-content">
+                  <h3>Date: <%= dive.date %></h3>
+                  <h3>Dive Time: <%= dive.diveTime %></h3>
+                  <h3>Maximum Depth: <%= dive.maxDepth %></h3>
+                </div>
+              </summary>
+
+
+              <div class="full-content">
+                <% for (const [key, keyAlias] of Object.entries(keyNames)) {%>
+                  <% if (dive[key] && key != "date" && key != "diveTime" && key != "maxDepth") {%>
+                    <h3><%= keyAlias%> : <%= dive[key] %></h3>
+                  <%}%>
+                <%}%>
+
+              </div>
+
+            </details>
+          </li>
+        <%})%>
+
+
+      </ul>
+
 
     <script src="/app.js" defer></script>
   </body>

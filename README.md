@@ -37,22 +37,26 @@ Follow these steps to use it:
    ```bash
    cd cs326project
    ```
-3. At this point, you should make sure you have npm installed before moving on to project dependencies. Follow these steps: 
-   - npm (acronym for Node Package Manager) is included with Node.js, which you can install from the official Node.js website, https://nodejs.org/en/download. 
-   - Select the long-term support (LTS) version for your operating system, and download. 
+3. At this point, you should make sure you have npm installed before moving on to project dependencies. Follow these steps:
+   - npm (acronym for Node Package Manager) is included with Node.js, which you can install from the official Node.js website, https://nodejs.org/en/download.
+   - Select the long-term support (LTS) version for your operating system, and download.
    - Run the installer. Add Node.js to your system PATH if prompted.
-   - Close and reopen your terminal. 
-   - Verify that npm is installed and functioning using: 
+   - Close and reopen your terminal.
+   - Verify that npm is installed and functioning using:
+
    ```bash
    node --version
    ```
-   and 
+
+   and
+
    ```bash
    npm --version
    ```
-   - You should get a version number for both of these if they installed correctly. 
 
-4. You should have npm installed now, and you should still be in your project directory.  Run: 
+   - You should get a version number for both of these if they installed correctly.
+
+4. You should have npm installed now, and you should still be in your project directory. Run:
    ```bash
    npm install
    ```
@@ -63,3 +67,16 @@ Follow these steps to use it:
    ```
    to start the server.
 6. Then open http://localhost:3000 in your browser.
+
+# Design Decisions
+
+## Juan
+
+### sprint 2
+
+I took Amita's work on the POST functionality and added GET functionality
+by including logic within app.js that takes a form's input contents, and within its submit handler,
+after making the POST request, dynammically constructs a new list entry and adds it to the DOM.
+The alternative would have been to have the form naturally reload the page with a redirect, where the server builds
+and hydrates the html once more and sends it back to the client. I didn't go down this path as it is slower and results
+in a user experience that is not as smooth as the first option.

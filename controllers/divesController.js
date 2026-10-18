@@ -1,5 +1,10 @@
 import * as divesService from "../services/divesService.js";
 
+export const index = async (req, res) => {
+  const dives = await divesService.listDives();
+  res.status(200).render("dives", { dives });
+};
+
 export const create = async (req, res) => {
   const result = await divesService.createDive(req.body);
 

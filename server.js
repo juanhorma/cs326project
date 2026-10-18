@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.set("view engine", "ejs");
-
+app.set("views", "views");
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,10 +20,6 @@ app.get("/stats", (req, res) => {
   res.send(
     "View your dive statistics, including total number of dives, average depth reached, dive times, maximum and minimum depths, and most common dive modality.",
   );
-});
-
-app.get("/dive-log", (req, res) => {
-  res.render("dives");
 });
 
 app.use("/dives", divesRouter);
