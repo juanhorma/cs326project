@@ -80,3 +80,9 @@ after making the POST request, dynammically constructs a new list entry and adds
 The alternative would have been to have the form naturally reload the page with a redirect, where the server builds
 and hydrates the html once more and sends it back to the client. I didn't go down this path as it is slower and results
 in a user experience that is not as smooth as the first option.
+
+## Amita
+
+### Sprint 2
+
+One design decision I made was to validate the dive entry fields in the service layer rather than directly in the controller. The alternative option here would have been to check whether the required fields were provided inside the POST controller before saving the entry. I chose to put the validation in the service layer because it separates the business logic from handling HTTP requests and responses. This also will make validation easier to reuse if we add other ways to create or update dive entries in the future without having to repeat the same checks in multiple controllers.
