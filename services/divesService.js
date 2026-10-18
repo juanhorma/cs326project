@@ -1,4 +1,5 @@
 import { getAll, save } from "../repositories/divesRepository.js";
+import { toDiveDto } from "../dtos/diveDto.js";
 
 const validateDive = ({
   date,
@@ -33,6 +34,8 @@ const validateDive = ({
   };
 };
 
+export const listDives = async () => (await getAll()).map(toDiveDto);
+
 export const createDive = async (data) => {
   const result = validateDive(data);
 
@@ -41,10 +44,10 @@ export const createDive = async (data) => {
   }
 
   const dives = await getAll();
-  dives.push(result.value);
+  dives.push(toDiveDto(result.value));
   await save(dives);
   return {
     ok: true,
-    value: result.value,
+    value: toDiveDto(result.value),
   };
 };
