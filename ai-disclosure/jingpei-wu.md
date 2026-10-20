@@ -5,3 +5,6 @@
 
 # Sprint 1
 - I use Chat GPT to learn how to show the command prompt in the code block at README.md
+
+# Sprint 2
+- I use Chat GPT to generate the css styling guidelines to make the form looks good.
