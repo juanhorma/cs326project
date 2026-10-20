@@ -61,7 +61,12 @@
 
               <div class="full-content">
                 <% for (const [key, keyAlias] of Object.entries(keyNames)) {%>
-                  <% if (dive[key] && key != "date" && key != "diveTime" && key != "maxDepth") {%>
+                  <% if (dive[key] !== undefined &&
+                          dive[key] !== null &&
+                          dive[key] !== "" &&
+                          key != "date" &&
+                          key != "diveTime" &&
+                          key != "maxDepth") {%>
                     <h3><%= keyAlias%> : <%= dive[key] %></h3>
                   <%}%>
                 <%}%>
