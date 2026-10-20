@@ -68,6 +68,14 @@ Follow these steps to use it:
    to start the server.
 6. Then open http://localhost:3000 in your browser.
 
+# Feature
+
+## Location Search
+
+Users can search for existing dive logs on the /dives page using the Search Location form. Enter a location name and click Search. The form sends a GET request to /dives?location=xxx.
+The server filters the saved dive logs by location and displays only the matching entries. The search is case-insensitive and supports partial matches. If no entries match, the page displays "No matching dives found."
+Users can click Show all to clear the search and display all saved dive logs again.
+
 # Design Decisions
 
 ## Juan
