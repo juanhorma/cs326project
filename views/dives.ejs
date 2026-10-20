@@ -15,15 +15,17 @@
           type="number"
           name="diveTime"
           placeholder="Dive time in minutes"
+          min="1"
           required
         />
-        <input type="number" name="maxDepth" placeholder="Maximum depth (m)" required/>
+        <input type="number" name="maxDepth" placeholder="Maximum depth (m)" min="0.1" step="any" required/>
         <input type="text" name="location" placeholder="Location" />
         <input type="text" name="equipment" placeholder="Equipment used" />
         <input
           type="number"
           name="decompressionTime"
           placeholder="Decompression time in minutes"
+          min="0"
         />
         <input type="text" name="notes" placeholder="Notes" />
         <button type="submit">Add dive entry</button>
