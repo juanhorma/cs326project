@@ -59,7 +59,18 @@ const validateDive = ({
   };
 };
 
-export const listDives = async () => (await getAll()).map(toDiveDto);
+export const listDives = async (location) => {
+  const dives = await getAll();
+
+  if (location) {
+    const matchDives = dives.filter(
+      dive => dive.location?.toLowerCase().includes(location.toLowerCase())
+    );
+    return matchDives.map(toDiveDto);
+  }
+
+  return dives.map(toDiveDto);
+};
 
 export const createDive = async (data) => {
   const result = validateDive(data);

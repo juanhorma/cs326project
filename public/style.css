@@ -26,6 +26,40 @@ body {
   border: 1px solid #ccc;
   border-radius: 2px;
 }
+
+#search-location {
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+}
+
+#search-location a {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #25465a;
+  color: #e4f3fa;
+  text-decoration: none;
+  border: 1px solid #5d91a8;
+  border-radius: 4px;
+}
+
+#search-location a:hover {
+  background-color: #376981;
+}
+
+#search-message {
+  color: rgba(255, 255, 255, 0.9);
+  background-color:rgba(0, 0, 0, 0.55);
+  padding: 1rem;
+  border: 1px solid #5d91a8;
+  border-radius: 4px;
+  text-align: center;
+}
+
 ul {
   display: flex;
   flex-direction: column;
