@@ -12,6 +12,7 @@ body {
 #dive-entry {
   color: rgba(255, 255, 255, 0.85);
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   padding: 1rem;
   border-radius: 2px;
@@ -19,7 +20,8 @@ body {
 }
 
 #dive-entry input {
-  flex: 1;
+  flex: 1 1 160px;
+  min-width: 0;
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 2px;
