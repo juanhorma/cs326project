@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/style.css" />
+    <title>DIVELOG - Dive Buddies</title>
+  </head>
+  <body> 
+    <h1 style="color: white;">Dive Buddies</h1>
+    <nav class="site-nav"><a href="/dives">Dive log</a> <a href="/buddies">Dive buddies</a></nav>
+
+    <form id="buddy-entry"> 
+      <input type="text" name="name" placeholder="Buddy name" maxlength="100" required />
+      <input type="text" name="certification" placeholder="Certification" />
+      <input type="email" name="email" placeholder="Email" />
+      <button type="submit">Add buddy</button>
+    </form>
+
+    <p id="form-error"></p>
+
+    <p id="buddies-empty"<% if (buddies.length > 0) { %> hidden<% } %>>No dive buddies saved yet.</p>
+
+    <ul id="buddies">
+      <% buddies.forEach((buddy) => {  %>
+        <li class="buddy-item">
+          <h3><%= buddy.name %> </h3> 
+          <% if (buddy.certification) { %><span>Certification: <%= buddy.certification %></span><% } %>
+          <% if (buddy.email) { %><span>Email: <%= buddy.email %></span><% } %> 
+        </li>
+      <% }) %>
+    </ul>
+
+    <script src="/buddies.js" defer></script>
+  </body>
+</html>
