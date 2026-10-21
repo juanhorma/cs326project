@@ -22,7 +22,7 @@ const validateBuddy = (data) => {
   }
 
   if (cleaned.name.length > MAX_NAME_LENGTH) {
-    return fail(400, 'name must be ${MAX_NAME_LENGTH} characters or fewer');
+    return fail(400, `name must be ${MAX_NAME_LENGTH} characters or fewer`);
   }
 
   if (typeof cleaned.certification !== "string") {
@@ -58,7 +58,7 @@ export const createBuddy = async (data) => {
     (buddy) => buddy.name.toLowerCase() === result.value.name.toLowerCase(),
   );
   if (taken) {
-    return fail(409, 'a dive buddy named "${result.value.name}" already exists');
+    return fail(409, `a dive buddy named "${result.value.name}" already exists`);
   }
 
   buddies.push(toBuddyDto(result.value));
