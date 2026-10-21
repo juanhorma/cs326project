@@ -86,29 +86,29 @@ The server filters the saved dive logs by location and displays only the matchin
 Users can click Show all to clear the search and display all saved dive logs again.
 
 # System Diagram
+```text
 Browser
    |
    |-- GET /dives?location=xxx --> dives.ejs (HTML)
-   |-- POST /dives --> app.js sends JSON
-   |-- GET /buddies --> buddies.ejs (HTML)
-   |-- POST /buddies --> buddies.js sends JSON
+   |-- POST /dives (public/app.js sends JSON)
+   |-- GET /buddies
+   |-- POST /buddies (requires browser submit handler)
    |
    v
 server.js
    - Middleware (static files, JSON, form data)
-   - Connects routes
+   - Mounts /dives and /buddies routers
    |
    v
 Routes
    - dives.js
    - buddies.js
-   - Sends requests to controllers
    |
    v
 Controllers
    - divesController.js
    - buddiesController.js
-   - Handles requests and responses
+   - Read requests and send HTTP responses
    |
    v
 Services
@@ -121,13 +121,19 @@ Services
 Repositories
    - divesRepository.js
    - buddiesRepository.js
-   - Reads and saves data
+   - Reads saved data
+   - Write when creating data
    |
    v
 Storage
    - dives.json
    - buddies.json
 
+Response back to the browser:
+   GET  -> Controller renders EJS -> HTML page
+   POST -> Controller returns JSON -> Browser JavaScript
+           updates the displayed list
+```
 Errors: a service returns { ok: false, error: { status, message } } and the controller sends it as JSON (400, 409). Anything thrown or rejected in an async> handler goes through asyncHandler to the error-handling middleware at the end of server.js, which responds with JSON instead of crashing the server. In the browser, fetchJSON() checks response.ok and shows the error under the form.
 
 
