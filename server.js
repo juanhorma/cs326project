@@ -1,5 +1,7 @@
 import express from "express";
 import divesRouter from "./routes/dives.js";
+import buddiesRouter from "./routes/buddies.js";
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +25,7 @@ app.get("/stats", (req, res) => {
 });
 
 app.use("/dives", divesRouter);
+app.use("/buddies", buddiesRouter);
 
 app.use((req, res) => {
   res.status(404).send("Page not found.");

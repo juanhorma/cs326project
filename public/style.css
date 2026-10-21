@@ -9,6 +9,16 @@ body {
   background-attachment: fixed;
 }
 
+.site-nav {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.site-nav a {
+  color: #e4f3fa;
+}
+
 #dive-entry {
   color: rgba(255, 255, 255, 0.85);
   display: flex;
@@ -76,4 +86,36 @@ li {
   border: 1px solid #ddd;
   border-radius: 4px;
   color: rgba(255, 255, 255, 0.85);
+}
+
+#buddy-entry {
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+}
+
+#buddy-entry input {
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+#buddies-empty {
+  color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(0, 0, 0, 0.55);
+  padding: 1rem;
+  border: 1px solid #5d91a8;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.buddy-item {
+  flex-wrap: wrap;
+  gap: 1rem;
 }
