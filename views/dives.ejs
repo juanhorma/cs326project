@@ -15,15 +15,17 @@
           type="number"
           name="diveTime"
           placeholder="Dive time in minutes"
+          min="1"
           required
         />
-        <input type="number" name="maxDepth" placeholder="Maximum depth (m)" required/>
+        <input type="number" name="maxDepth" placeholder="Maximum depth (m)" min="0.1" step="any" required/>
         <input type="text" name="location" placeholder="Location" />
         <input type="text" name="equipment" placeholder="Equipment used" />
         <input
           type="number"
           name="decompressionTime"
           placeholder="Decompression time in minutes"
+          min="0"
         />
         <input type="text" name="notes" placeholder="Notes" />
         <button type="submit">Add dive entry</button>
@@ -32,6 +34,15 @@
 
       <p id="form-error"></p>
 
+      <form id="search-location" method="GET" action="/dives">
+          <input type="text" name="location" placeholder="Search Location">
+          <button type="submit">Search</button>
+          <a href="/dives">Show all</a>
+      </form>
+
+      <% if (dives.length === 0) { %>
+        <p id="search-message">No matching dives found.</p>
+      <% } %>
 
       <ul id="dives">
       <%
@@ -59,7 +70,12 @@
 
               <div class="full-content">
                 <% for (const [key, keyAlias] of Object.entries(keyNames)) {%>
-                  <% if (dive[key] && key != "date" && key != "diveTime" && key != "maxDepth") {%>
+                  <% if (dive[key] !== undefined &&
+                          dive[key] !== null &&
+                          dive[key] !== "" &&
+                          key != "date" &&
+                          key != "diveTime" &&
+                          key != "maxDepth") {%>
                     <h3><%= keyAlias%> : <%= dive[key] %></h3>
                   <%}%>
                 <%}%>

@@ -1,7 +1,9 @@
 import * as divesService from "../services/divesService.js";
 
 export const index = async (req, res) => {
-  const dives = await divesService.listDives();
+  const location = req.query.location;
+
+  const dives = await divesService.listDives(location);
   res.status(200).render("dives", { dives });
 };
 
