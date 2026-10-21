@@ -30,13 +30,13 @@ This is a web application designed for divers to be able to log information abou
 Follow these steps to use it:
 
 1. On your machine, open your terminal of choice in the directory in which you want the repo, and run the command
-   ```bash
+   '''bash
    git clone https://github.com/juanhorma/cs326project.git
-   ```
+   '''
 2. After clone, run the command
-   ```bash
+   '''bash
    cd cs326project
-   ```
+   '''
 3. At this point, you should make sure you have npm installed before moving on to project dependencies. Follow these steps:
    - npm (acronym for Node Package Manager) is included with Node.js, which you can install from the official Node.js website, https://nodejs.org/en/download.
    - Select the long-term support (LTS) version for your operating system, and download.
@@ -44,37 +44,93 @@ Follow these steps to use it:
    - Close and reopen your terminal.
    - Verify that npm is installed and functioning using:
 
-   ```bash
+   '''bash
    node --version
-   ```
+   '''
 
    and
 
-   ```bash
+   '''bash
    npm --version
-   ```
+   '''
 
    - You should get a version number for both of these if they installed correctly.
 
 4. You should have npm installed now, and you should still be in your project directory. Run:
-   ```bash
+   '''bash
    npm install
-   ```
+   '''
    to install all the dependencies needed for this project.
 5. Then run
-   ```bash
+   '''bash
    npm start
-   ```
+   '''
    to start the server.
-6. Then open http://localhost:3000 in your browser.
+6. Then open http://localhost:3000/dives in your browser (the dive log). Dive buddies are at http://localhost:3000/buddies.
 
-# Feature
+# Features
+
+## Dive Logging
+
+Go to '/dives'. Fill in the form at the top of the page (date, dive time in minutes and maximum depth in metres are required; location, equipment, decompression time and notes are optional) and click "Add dive entry". The browser sends a 'POST /dives' request with a JSON body. If the server accepts it, the dive is saved to 'dives.json' and appears in the list straight away, without a page reload. Click an entry to expand it and see the optional details. Saved dives are still there after the server is restarted.
+If the input is invalid (for example a missing date or a dive time of 0) the server answers '400' with a message, nothing is saved, and the message is shown under the form. If the server cannot be reached, the page says so.
+
+## Dive Buddies (second slice since we have four people)
+
+Go to '/buddies' (also linked from the top of the dive log page). Enter a buddy's name (required), certification and email (both optional) and click "Add buddy". The browser sends 'POST /buddies'; the server validates, saves the buddy to 'buddies.json', and the new buddy is appended to the list without reloading. Rules enforced by the server: the name must be present and at most 100 characters, the email (if given) must look like an email address (ie be in email address format), and names must be unique (case-insensitive). Bad input gets a '400', a duplicate name gets a '409', and for both of these cases nothing is saved (and the message is shown under the form).
 
 ## Location Search
 
 Users can search for existing dive logs on the /dives page using the Search Location form. Enter a location name and click Search. The form sends a GET request to /dives?location=xxx.
 The server filters the saved dive logs by location and displays only the matching entries. The search is case-insensitive and supports partial matches. If no entries match, the page displays "No matching dives found."
 Users can click Show all to clear the search and display all saved dive logs again.
+
+# System Diagram
+Browser
+   |
+   |-- GET /dives?location=xxx --> dives.ejs (HTML)
+   |-- POST /dives --> app.js sends JSON
+   |-- GET /buddies --> buddies.ejs (HTML)
+   |-- POST /buddies --> buddies.js sends JSON
+   |
+   v
+server.js
+   - Middleware (static files, JSON, form data)
+   - Connects routes
+   |
+   v
+Routes
+   - dives.js
+   - buddies.js
+   - Sends requests to controllers
+   |
+   v
+Controllers
+   - divesController.js
+   - buddiesController.js
+   - Handles requests and responses
+   |
+   v
+Services
+   - divesService.js
+   - buddiesService.js
+   - Validation and business rules
+   - Uses DTOs to format data
+   |
+   v
+Repositories
+   - divesRepository.js
+   - buddiesRepository.js
+   - Reads and saves data
+   |
+   v
+Storage
+   - dives.json
+   - buddies.json
+
+Errors: a service returns { ok: false, error: { status, message } } and the controller sends it as JSON (400, 409). Anything thrown or rejected in an async> handler goes through asyncHandler to the error-handling middleware at the end of server.js, which responds with JSON instead of crashing the server. In the browser, fetchJSON() checks response.ok and shows the error under the form.
+
+
 
 # Design Decisions
 
@@ -101,3 +157,7 @@ One design decision I made was to validate the dive entry fields in the service 
 ### Sprint 2
 
 I took Juan's work on the GET functionality and added the search inside by implementing the filter in the service layer and using the GET query parameters (dives?location=xxx). The alternative option here would be filtering in the client side using JavaScript in app.js to filter the existing dive logs loaded in the browser. The advantage of the server side filtering is fit the existing structure, easier to implement and allow the user easily bookmark or share URLs. If we do the client side filtering, the logic in the app.js is more complex and additional JavaScript logic to manage and update. However, the tradeoff is each search requires a new request and reloads the page, the client side filtering could update the result immediately without reload the page.
+
+## Hope
+### Sprint 2
+For the dive buddies slice I gave buddies their own route, controller, service, repository and JSON file (see buddies.json) instead of adding them as a nested list inside dives.json and extending the dives service. The alternative would have been less code, since one file and one repository would already exist, and a dive could point directly at its buddies. I chose the separate slice because each repository then can live independently of the other one; my goal was that changing what a buddy looks like, or later moving buddies to MongoDB, cannot break how dives are read or written, and a buddy can be added or validated without first loading every dive. The alternative would have made divesService responsible for two unrelated sets of rules (dive validation and buddy name uniqueness) and made every buddy save a rewrite of the whole dive log. The downside of my choice is some duplicated code (we have two near-identical repositories and fetch helpers) and no link yet between a dive and its buddies, which I accept for the scope of this sprint.
