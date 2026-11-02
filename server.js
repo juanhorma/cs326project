@@ -1,10 +1,15 @@
 import express from "express";
+import mongoose from "mongoose";
 import divesRouter from "./routes/dives.js";
 import buddiesRouter from "./routes/buddies.js";
 
-
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+await mongoose.connect(
+  process.env.MONGODB_URI ||
+    "mongodb://dev:devpassword@mongo:27017/divelog?authSource=admin",
+);
 
 app.set("view engine", "ejs");
 app.set("views", "views");
