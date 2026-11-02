@@ -1,5 +1,21 @@
+import mongoose from "mongoose";
 import { readFile, writeFile } from "fs/promises";
 
+const diveSchema = new mongoose.Schema(
+  {
+    date: { type: String, required: true },
+    location: String,
+    diveTime: { type: Number, required: true },
+    equipment: String,
+    diveTime: { type: Number, required: true },
+    notes: String,
+  },
+  { timestamps: true },
+);
+
+const Dive = mongoose.model("Dive", diveSchema);
+
+// existing JSON operations
 const DATA_FILE = "dives.json";
 
 export const getAll = async () => {
