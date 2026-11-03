@@ -4,7 +4,8 @@
   "description": "| Name            | GitHub Username  | | --------------- | ---------------- | | Juan Hormaechea | juanhorma        | | Amita Vellal    | avellal20        | | Jingpei Wu      | Gingpui-Ng       | | Hope Roundcount | hroundcountUMASS |",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,8 @@
     "ejs": "^7.0.1",
     "express": "^5.2.1",
     "mongoose": "^9.11.4"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2"
   }
 }
