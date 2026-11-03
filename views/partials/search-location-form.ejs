@@ -4,9 +4,18 @@
   hx-target="#dives"
   hx-swap="innerHTML"
   hx-disabled-elt="find button"
-  <% if (locals.oob) { %>hx-swap-oob="true"<% } %>
 >
   <input type="text" name="location" placeholder="Search Location">
   <button type="submit">Search</button>
-  <a href="/dives">Show all</a>
+
+  <button
+    type="button"
+    hx-get="/dives"
+    hx-target="#dives"
+    hx-swap="innerHTML"
+    hx-params="none"
+    onclick="this.form.reset()"
+  >
+    Show all
+  </button>
 </form>
