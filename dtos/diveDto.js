@@ -1,4 +1,5 @@
 export const toDiveDto = (dive) => ({
+  id: dive._id.toString(),
   date: dive.date,
   location: dive.location,
   diveTime: dive.diveTime,

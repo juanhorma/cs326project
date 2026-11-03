@@ -1,10 +1,15 @@
 import express from "express";
+import mongoose from "mongoose";
 import divesRouter from "./routes/dives.js";
 import buddiesRouter from "./routes/buddies.js";
 
-
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+await mongoose.connect(
+  process.env.MONGODB_URI ||
+    "mongodb://dev:devpassword@mongo:27017/divelog?authSource=admin",
+);
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -36,7 +41,10 @@ app.use((err, req, res, next) => {
   const status = err.status || 500;
 
   res.status(status).json({
-    error: status === 400 ? "Invalid request body." : "Something went wrong.",
+    error:
+      status >= 500
+        ? "Something went wrong."
+        : err.message || "Invalid request body.",
   });
 });
 

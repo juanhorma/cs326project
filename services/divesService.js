@@ -1,4 +1,4 @@
-import { getAll, save } from "../repositories/divesRepository.js";
+import { getAll, create, findById } from "../repositories/divesRepository.js";
 import { toDiveDto } from "../dtos/diveDto.js";
 
 const validateDive = ({
@@ -9,7 +9,7 @@ const validateDive = ({
   decompressionTime,
   maxDepth,
   notes,
-}) => {
+} = {}) => {
   if (!date || !diveTime || !maxDepth) {
     return {
       ok: false,
@@ -20,8 +20,11 @@ const validateDive = ({
     };
   }
 
-  if (!Number.isFinite(diveTime) || diveTime <= 0 ||
-      !Number.isFinite(maxDepth) || maxDepth <= 0
+  if (
+    !Number.isFinite(diveTime) ||
+    diveTime <= 0 ||
+    !Number.isFinite(maxDepth) ||
+    maxDepth <= 0
   ) {
     return {
       ok: false,
@@ -32,9 +35,10 @@ const validateDive = ({
     };
   }
 
-  if (decompressionTime !== null &&
-      decompressionTime !== "" &&
-      (!Number.isFinite(decompressionTime) || decompressionTime < 0)
+  if (
+    decompressionTime !== null &&
+    decompressionTime !== "" &&
+    (!Number.isFinite(decompressionTime) || decompressionTime < 0)
   ) {
     return {
       ok: false,
@@ -63,8 +67,8 @@ export const listDives = async (location) => {
   const dives = await getAll();
 
   if (location) {
-    const matchDives = dives.filter(
-      dive => dive.location?.toLowerCase().includes(location.toLowerCase())
+    const matchDives = dives.filter((dive) =>
+      dive.location?.toLowerCase().includes(location.toLowerCase()),
     );
     return matchDives.map(toDiveDto);
   }
@@ -79,11 +83,24 @@ export const createDive = async (data) => {
     return result;
   }
 
-  const dives = await getAll();
-  dives.push(toDiveDto(result.value));
-  await save(dives);
   return {
     ok: true,
-    value: toDiveDto(result.value),
+    value: toDiveDto(await create(result.value)),
+  };
+};
+
+export const getDiveById = async (id) => {
+  const dive = await findById(id);
+
+  if (!dive) {
+    return {
+      ok: false,
+      error: { status: 404, message: "Dive not found" },
+    };
+  }
+
+  return {
+    ok: true,
+    value: toDiveDto(dive),
   };
 };
