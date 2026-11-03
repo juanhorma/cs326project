@@ -41,7 +41,10 @@ app.use((err, req, res, next) => {
   const status = err.status || 500;
 
   res.status(status).json({
-    error: status === 400 ? "Invalid request body." : "Something went wrong.",
+    error:
+      status >= 500
+        ? "Something went wrong."
+        : err.message || "Invalid request body.",
   });
 });
 

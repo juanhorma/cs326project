@@ -9,7 +9,7 @@ const validateDive = ({
   decompressionTime,
   maxDepth,
   notes,
-}) => {
+} = {}) => {
   if (!date || !diveTime || !maxDepth) {
     return {
       ok: false,
