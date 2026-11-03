@@ -60,18 +60,19 @@ Follow these steps to use it:
    ```bash
    npm install
    ```
-   to install all the dependencies needed for this project.
+   to install all the dependencies needed for this project. This includes Mongoose, which is used to connect the application to MongoDB.
+5. Start MongoDB by running:
 
-5. Then run
    ```bash
    dc-up mongo
    ```
-   to start the MongoDB
-   ```bash
+
+6. Then run
+   '''bash
    npm start
    ```
    to start the server.
-6. Then open http://localhost:3000/dives in your browser (the dive log). Dive buddies are at http://localhost:3000/buddies.
+7. Then open http://localhost:3000/dives in your browser (the dive log). Dive buddies are at http://localhost:3000/buddies.
 
 Note: If you want to actual see the data at the database, you can open a new terminal, go to this director, run
 ```bash
@@ -99,12 +100,12 @@ Find the data
 
 ## Dive Logging
 
-Go to '/dives'. Fill in the form at the top of the page (date, dive time in minutes and maximum depth in metres are required; location, equipment, decompression time and notes are optional) and click "Add dive entry". The browser sends a 'POST /dives' request with a JSON body. If the server accepts it, the dive is saved to 'dives.json' and appears in the list straight away, without a page reload. Click an entry to expand it and see the optional details. Saved dives are still there after the server is restarted.
+Go to '/dives'. Fill in the form at the top of the page (date, dive time in minutes and maximum depth in metres are required; location, equipment, decompression time and notes are optional) and click "Add dive entry". The browser sends a 'POST /dives' request with a JSON body. If the server accepts it, the dive is saved to MongoDB and appears in the list straight away, without a page reload. Click an entry to expand it and see the optional details. Saved dives are still there after the server is restarted.
 If the input is invalid (for example a missing date or a dive time of 0) the server answers '400' with a message, nothing is saved, and the message is shown under the form. If the server cannot be reached, the page says so.
 
 ## Dive Buddies (second slice since we have four people)
 
-Go to '/buddies' (also linked from the top of the dive log page). Enter a buddy's name (required), certification and email (both optional) and click "Add buddy". The browser sends 'POST /buddies'; the server validates, saves the buddy to 'buddies.json', and the new buddy is appended to the list without reloading. Rules enforced by the server: the name must be present and at most 100 characters, the email (if given) must look like an email address (ie be in email address format), and names must be unique (case-insensitive). Bad input gets a '400', a duplicate name gets a '409', and for both of these cases nothing is saved (and the message is shown under the form).
+Go to '/buddies' (also linked from the top of the dive log page). Enter a buddy's name (required), certification and email (both optional) and click "Add buddy". The browser sends 'POST /buddies'; the server validates, saves the buddy to MongoDB, and the new buddy is appended to the list without reloading. Rules enforced by the server: the name must be present and at most 100 characters, the email (if given) must look like an email address (ie be in email address format), and names must be unique (case-insensitive). Bad input gets a '400', a duplicate name gets a '409', and for both of these cases nothing is saved (and the message is shown under the form).
 
 ## Location Search
 
@@ -112,7 +113,24 @@ Users can search for existing dive logs on the /dives page using the Search Loca
 The server filters the saved dive logs by location and displays only the matching entries. The search is case-insensitive and supports partial matches. If no entries match, the page displays "No matching dives found."
 Users can click Show all to clear the search and display all saved dive logs again.
 
+# Sprint 3 Changes
+
+## MongoDB Persistence
+
+Dive log and dive buddies are now stored in MongoDB using Mongoose instead of JSON files. Both repositories support individual database operations (getAll, findById, create, updateById, and removeById). Routes such as `GET /dives`, `POST /dives`, `GET /buddies`, and `POST /buddies` now use MongoDB.
+
+Mongo DB `_id` values are converted into string IDs through DTOs. The service layers were updated to work with the new repositories, and a new `GET /dives/:id` route and "View Dive" link were added to retrieve and display and individual dives JSON data using its MongoDB ID.
+
+### How to Verify
+
+1. Start MongoDB with `dc-up mongo`, then run npm start.
+2. Visit /dives and /buddies, create records, and restart the server to confirm persistence.
+3. Expand a dive entry and click "View Dive" to confirm that a separate page displays the correct dive's JSON data using its MongoDB ID.
+4. Confirm that location search and existing form validation still work.
+5. To see saved records directly in MongoDb, run `dev-db` in the terminal, then use `use divelog` and `show collections`. Run `db.dives.find()` ot `db.buddies.find()` to view stored records.
+
 # System Diagram
+
 ```text
 Browser
    |
@@ -161,9 +179,8 @@ Response back to the browser:
    POST -> Controller returns JSON -> Browser JavaScript
            updates the displayed list
 ```
+
 Errors: a service returns { ok: false, error: { status, message } } and the controller sends it as JSON (400, 409). Anything thrown or rejected in an async> handler goes through asyncHandler to the error-handling middleware at the end of server.js, which responds with JSON instead of crashing the server. In the browser, fetchJSON() checks response.ok and shows the error under the form.
-
-
 
 # Design Decisions
 
@@ -184,6 +201,9 @@ in a user experience that is not as smooth as the first option.
 
 One design decision I made was to validate the dive entry fields in the service layer rather than directly in the controller. The alternative option here would have been to check whether the required fields were provided inside the POST controller before saving the entry. I chose to put the validation in the service layer because it separates the business logic from handling HTTP requests and responses. This also will make validation easier to reuse if we add other ways to create or update dive entries in the future without having to repeat the same checks in multiple controllers.
 
+### Sprint 3
+
+A design decision I made was to use the existing DTOs and update them to convert MongoDB's `_id` values into string id values for dives and buddies. An alternative option here would have been to pass MongoDB's `_id` values directly through the repositories, services, and controllers to the frontend which would be ok for some smaller applications. The DTO approach felt like the better choice here because now DiveLog can consistently reference dives and buddies using just an id field without exposing any MongoDB specific details throughout other parts of the application. Now the new `GET /dives/:id` route and "View Dive" link can use a consistent ID format to retrieve individual dive records, whereas otherwise, the controllers and views would need to handle MongoDB's `_id` structure directly, requiring additional changes and making future database changes more difficult.
 
 ## Jingpei
 
@@ -192,5 +212,7 @@ One design decision I made was to validate the dive entry fields in the service 
 I took Juan's work on the GET functionality and added the search inside by implementing the filter in the service layer and using the GET query parameters (dives?location=xxx). The alternative option here would be filtering in the client side using JavaScript in app.js to filter the existing dive logs loaded in the browser. The advantage of the server side filtering is fit the existing structure, easier to implement and allow the user easily bookmark or share URLs. If we do the client side filtering, the logic in the app.js is more complex and additional JavaScript logic to manage and update. However, the tradeoff is each search requires a new request and reloads the page, the client side filtering could update the result immediately without reload the page.
 
 ## Hope
+
 ### Sprint 2
+
 For the dive buddies slice I gave buddies their own route, controller, service, repository and JSON file (see buddies.json) instead of adding them as a nested list inside dives.json and extending the dives service. The alternative would have been less code, since one file and one repository would already exist, and a dive could point directly at its buddies. I chose the separate slice because each repository then can live independently of the other one; my goal was that changing what a buddy looks like, or later moving buddies to MongoDB, cannot break how dives are read or written, and a buddy can be added or validated without first loading every dive. The alternative would have made divesService responsible for two unrelated sets of rules (dive validation and buddy name uniqueness) and made every buddy save a rewrite of the whole dive log. The downside of my choice is some duplicated code (we have two near-identical repositories and fetch helpers) and no link yet between a dive and its buddies, which I accept for the scope of this sprint.
