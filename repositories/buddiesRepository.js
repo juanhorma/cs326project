@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { readFile, writeFile } from "fs/promises";
 
 const buddySchema = new mongoose.Schema(
   {
@@ -12,14 +11,17 @@ const buddySchema = new mongoose.Schema(
 
 const Buddy = mongoose.model("Buddy", buddySchema);
 
-// existing JSON operations
-const DATA_FILE = "buddies.json";
+export const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-export const getAll = async () => {
-  const data = await readFile(DATA_FILE, "utf-8");
-  return JSON.parse(data);
-};
+export const getAll = async () => Buddy.find().lean();
 
-export const save = async (buddies) => {
-  await writeFile(DATA_FILE, JSON.stringify(buddies, null, 2));
+export const findById = async (id) => Buddy.findById(id).lean();
+
+export const create = async (data) => (await Buddy.create(data)).toObject();
+
+export const updateById = async (id, data) =>
+  Buddy.findByIdAndUpdate(id, data, { new: true }).lean();
+
+export const removeById = async (id) => {
+  await Buddy.findByIdAndDelete(id);
 };

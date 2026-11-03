@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { readFile, writeFile } from "fs/promises";
 
 const diveSchema = new mongoose.Schema(
   {
@@ -7,7 +6,8 @@ const diveSchema = new mongoose.Schema(
     location: String,
     diveTime: { type: Number, required: true },
     equipment: String,
-    diveTime: { type: Number, required: true },
+    decompressionTime: Number,
+    maxDepth: { type: Number, required: true },
     notes: String,
   },
   { timestamps: true },
@@ -15,14 +15,17 @@ const diveSchema = new mongoose.Schema(
 
 const Dive = mongoose.model("Dive", diveSchema);
 
-// existing JSON operations
-const DATA_FILE = "dives.json";
+export const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-export const getAll = async () => {
-  const data = await readFile(DATA_FILE, "utf-8");
-  return JSON.parse(data);
-};
+export const getAll = async () => Dive.find().lean();
 
-export const save = async (dives) => {
-  await writeFile(DATA_FILE, JSON.stringify(dives, null, 2));
+export const findById = async (id) => Dive.findById(id).lean();
+
+export const create = async (data) => (await Dive.create(data)).toObject();
+
+export const updateById = async (id, data) =>
+  Dive.findByIdAndUpdate(id, data, { new: true }).lean();
+
+export const removeById = async (id) => {
+  await Dive.findByIdAndDelete(id);
 };
