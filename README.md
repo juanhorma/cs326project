@@ -30,13 +30,13 @@ This is a web application designed for divers to be able to log information abou
 Follow these steps to use it:
 
 1. On your machine, open your terminal of choice in the directory in which you want the repo, and run the command
-   '''bash
+   ```bash
    git clone https://github.com/juanhorma/cs326project.git
-   '''
+   ```
 2. After clone, run the command
-   '''bash
+   ```bash
    cd cs326project
-   '''
+   ```
 3. At this point, you should make sure you have npm installed before moving on to project dependencies. Follow these steps:
    - npm (acronym for Node Package Manager) is included with Node.js, which you can install from the official Node.js website, https://nodejs.org/en/download.
    - Select the long-term support (LTS) version for your operating system, and download.
@@ -44,29 +44,56 @@ Follow these steps to use it:
    - Close and reopen your terminal.
    - Verify that npm is installed and functioning using:
 
-   '''bash
+   ```bash
    node --version
-   '''
+   ```
 
    and
 
-   '''bash
+   ```bash
    npm --version
-   '''
+   ```
 
    - You should get a version number for both of these if they installed correctly.
 
 4. You should have npm installed now, and you should still be in your project directory. Run:
-   '''bash
+   ```bash
    npm install
-   '''
+   ```
    to install all the dependencies needed for this project.
+
 5. Then run
-   '''bash
+   ```bash
+   dc-up mongo
+   ```
+   to start the MongoDB
+   ```bash
    npm start
-   '''
+   ```
    to start the server.
 6. Then open http://localhost:3000/dives in your browser (the dive log). Dive buddies are at http://localhost:3000/buddies.
+
+Note: If you want to actual see the data at the database, you can open a new terminal, go to this director, run
+```bash
+   mongo-dev
+```
+The default go to devdb. Our database name is divelog. To see the database list, run
+```bash
+   show dbs
+```
+then run
+```bash
+   use divelog
+```
+To see the collection
+```bash
+   show collections
+```
+Find the data
+```bash
+   db.dives.find()
+   db.buddies.find()
+```
 
 # Features
 
