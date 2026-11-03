@@ -1,4 +1,4 @@
-import { getAll, create } from "../repositories/divesRepository.js";
+import { getAll, create, findById } from "../repositories/divesRepository.js";
 import { toDiveDto } from "../dtos/diveDto.js";
 
 const validateDive = ({
@@ -86,5 +86,21 @@ export const createDive = async (data) => {
   return {
     ok: true,
     value: toDiveDto(await create(result.value)),
+  };
+};
+
+export const getDiveById = async (id) => {
+  const dive = await findById(id);
+
+  if (!dive) {
+    return {
+      ok: false,
+      error: { status: 404, message: "Dive not found" },
+    };
+  }
+
+  return {
+    ok: true,
+    value: toDiveDto(dive),
   };
 };

@@ -8,4 +8,6 @@ router.get("/", asyncHandler(divesController.index));
 
 router.post("/", asyncHandler(divesController.create));
 
+router.get("/:id", asyncHandler(divesController.show));
+
 export default router;

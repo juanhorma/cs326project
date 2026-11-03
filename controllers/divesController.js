@@ -1,3 +1,4 @@
+import { isValidId } from "../repositories/divesRepository.js";
 import * as divesService from "../services/divesService.js";
 
 export const index = async (req, res) => {
@@ -18,4 +19,24 @@ export const create = async (req, res) => {
   }
 
   res.status(201).json(result.value);
+};
+
+export const show = async (req, res) => {
+  const { id } = req.params;
+
+  if (!isValidId(id)) {
+    res.status(400).json({ error: "Invalid dive ID" });
+    return;
+  }
+
+  const result = await divesService.getDiveById(id);
+
+  if (!result.ok) {
+    res.status(result.error.status).json({
+      error: result.error.message,
+    });
+    return;
+  }
+
+  res.status(200).json(result.value);
 };
