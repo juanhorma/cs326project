@@ -7,9 +7,10 @@
     <%# title specific to this page%>
   </head>
   <body>
-      <h1 style="color: white;">Dive Logger</h1>
-      <nav class="site-nav"><a href="/dives">Dive log</a> <a href="/buddies">Dive buddies</a></nav>
+    <h1 style="color: white;">Dive Logger</h1>
+    <%- include('partials/navigate') %>
 
+    <main>
       <form id="dive-entry">
         <input type="date" name="date" required/>
         <input
@@ -88,11 +89,8 @@
             </details>
           </li>
         <%})%>
-
-
       </ul>
-
-
+    </main>
     <script src="/app.js" defer></script>
   </body>
 </html>
