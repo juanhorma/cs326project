@@ -5,8 +5,23 @@
     <link rel="stylesheet" href="/style.css">
     <title>DIVELOG</title>
     <%# title specific to this page%>
+    <meta
+      name="htmx-config"
+      content='{
+        "timeout": 5000,
+        "responseHandling": [
+          { "code": "204", "swap": false },
+          { "code": "[23]..", "swap": true },
+          { "code": "[45]..", "swap": true, "error": true, "target": "#status", "swapOverride": "innerHTML" }
+        ]
+      }'
+    >
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   </head>
-  <body>
+  <body
+    hx-on::send-error="document.querySelector('#status').textContent = 'Could not reach the server.'"
+    hx-on::timeout="document.querySelector('#status').textContent = 'The server did not answer within five seconds.'"
+  >
     <h1 style="color: white;">Dive Logger</h1>
     <%- include('partials/navigate') %>
 
@@ -38,25 +53,8 @@
 
       <%- include('partials/search-location-form') %>
 
-      <% if (dives.length === 0) { %>
-        <p id="search-message">No matching dives found.</p>
-      <% } %>
-
       <ul id="dives">
-      <%
-          const keyNames = {
-            "date": "Date",
-            "diveTime": "Dive Time",
-            "maxDepth": "Maximum Depth",
-            "location": "Location",
-            "equipment": "Equipment",
-            "decompressionTime": "Decompression Time",
-            "notes": "Notes"
-          };
-        %>
-        <% dives.forEach((dive) => {%>
-          <%- include('partials/dive-item', { dive, keyNames }) %>
-        <%})%>
+        <%- include('partials/dive-list', { dives }) %>
       </ul>
     </main>
     <script src="/app.js" defer></script>
