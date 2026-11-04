@@ -19,6 +19,7 @@
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   </head>
   <body
+    hx-on::before-request="document.querySelector('#status').textContent = ''"
     hx-on::send-error="document.querySelector('#status').textContent = 'Could not reach the server.'"
     hx-on::timeout="document.querySelector('#status').textContent = 'The server did not answer within five seconds.'"
   >
@@ -52,7 +53,7 @@
       <p id="form-error"></p>
 
       <%- include('partials/search-location-form') %>
-
+      <%- include('partials/status') %>
       <ul id="dives">
         <%- include('partials/dive-list', { dives }) %>
       </ul>
