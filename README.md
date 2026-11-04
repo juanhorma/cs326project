@@ -149,6 +149,17 @@ Before the location search use the traditional GET form which reload the whole p
 3. Click Show All to restore all records and clear the search input.
 4. ALso can press F12 open the Developer Tools -> Network to verify that the request is from HTMX
 
+## Testing
+
+### What changed
+
+Full jest test suite for both dives and buddies routers added to `__tests__` directory.
+Every service layer function used by controllers is tested on both failure and success scenarios.
+
+### How to see it
+
+Run `npm test`, all 21 tests should pass. Jest runs every test case within the `__tests__` directory.
+
 # System Diagram
 
 ```text
