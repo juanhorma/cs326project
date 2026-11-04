@@ -129,6 +129,16 @@ Mongo DB `_id` values are converted into string IDs through DTOs. The service la
 4. Confirm that location search and existing form validation still work.
 5. To see saved records directly in MongoDb, run `dev-db` in the terminal, then use `use divelog` and `show collections`. Run `db.dives.find()` ot `db.buddies.find()` to view stored records.
 
+## HTMX interaction
+Before the location search use the traditional GET form which reload the whole page. After implement the HTMX(hx-get), update only the dive log list without the full page reload. The divesCOntroller detects the request from HTMX and will render EJS partial(dive-list.ejs). Also can click the Show all which also use HTMX to restore all dive log without reloading.
+
+### How to Verify
+
+1. Visit /dives. Enter a location and click search.
+2. The page won't reload and unchanged, only the dive list update.
+3. Click Show All to restore all records and clear the search input.
+4. ALso can press F12 open the Developer Tools -> Network to verify that the request is from HTMX
+
 # System Diagram
 
 ```text
@@ -210,6 +220,10 @@ A design decision I made was to use the existing DTOs and update them to convert
 ### Sprint 2
 
 I took Juan's work on the GET functionality and added the search inside by implementing the filter in the service layer and using the GET query parameters (dives?location=xxx). The alternative option here would be filtering in the client side using JavaScript in app.js to filter the existing dive logs loaded in the browser. The advantage of the server side filtering is fit the existing structure, easier to implement and allow the user easily bookmark or share URLs. If we do the client side filtering, the logic in the app.js is more complex and additional JavaScript logic to manage and update. However, the tradeoff is each search requires a new request and reloads the page, the client side filtering could update the result immediately without reload the page.
+
+### Sprint 3
+
+I decide to use HTMX to implement the location search and show all. HTMX replaces the traditional HTML GET Form which I implemented in Spring 2. The alternative option would keep using the previous one. The reason I switch to HTMX is the location search only needs the matched dive log and the other elements can remain unchanged, so there is no need to reload the whole page. The cost of continuing to use the HTML GET Form will reload the whole page for each search which will reload the content which no need to change.
 
 ## Hope
 
