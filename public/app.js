@@ -1,58 +1,6 @@
 const form = document.querySelector("#dive-entry");
-const list = document.querySelector("#dives");
 const errorMessage = document.querySelector("#form-error");
 errorMessage.style.color = "white";
-
-const buildDiveListItem = (dive) => {
-  const keyNames = {
-    date: "Date",
-    diveTime: "Dive Time",
-    maxDepth: "Maximum Depth",
-    location: "Location",
-    equipment: "Equipment",
-    decompressionTime: "Decompression Time",
-    notes: "Notes",
-  };
-
-  const item = document.createElement("li");
-  item.className = "dive-item";
-
-  const details = document.createElement("details");
-  details.className = "dive-details";
-  details.name = "dives-accordion";
-
-  const summary = document.createElement("summary");
-  summary.className = "dive-summary";
-
-  const summaryContent = document.createElement("div");
-  summaryContent.className = "summary-content";
-  for (const [prop, label] of [
-    ["date", "Date"],
-    ["diveTime", "Dive Time"],
-    ["maxDepth", "Maximum Depth"],
-  ]) {
-    const summaryElement = document.createElement("h3");
-    summaryElement.textContent = `${label}: ${dive[prop]}`;
-    summaryContent.append(summaryElement);
-  }
-
-  summary.append(summaryContent);
-
-  const fullContent = document.createElement("div");
-  fullContent.className = "full-content";
-
-  for (const [key, keyAlias] of Object.entries(keyNames)) {
-    if (dive[key] && key != "date" && key != "diveTime" && key != "maxDepth") {
-      const fullContentElement = document.createElement("h3");
-      fullContentElement.textContent = `${keyAlias} : ${dive[key]}`;
-      fullContent.append(fullContentElement);
-    }
-  }
-
-  details.append(summary, fullContent);
-  item.append(details);
-  return item;
-};
 
 const timedFetch = (url, options = {}) =>
   fetch(url, { ...options, signal: AbortSignal.timeout(5000) });
@@ -97,7 +45,7 @@ form.addEventListener("submit", async (event) => {
   button.disabled = true;
 
   try {
-    const saved = await fetchJSON("/dives", {
+    await fetchJSON("/dives", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -105,7 +53,8 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify(dive),
     });
 
-    list.append(buildDiveListItem(saved));
+    document.querySelector("#show-all-button").click();
+
     form.reset();
   } catch (error) {
     errorMessage.textContent = `Your dive was not saved. ${error.message}`;

@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Home page
 app.get("/", (req, res) => {
-  res.send("Welcome to DIVELOG!");
+  res.status(200).render("homepage");
 });
 
 // Dive statistics page

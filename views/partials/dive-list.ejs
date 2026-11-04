@@ -1,0 +1,18 @@
+<% if (dives.length === 0) { %>
+  <li id="search-message">No matching dives found.</li>
+<% } %>
+
+<%
+  const keyNames = {
+    "date": "Date",
+    "diveTime": "Dive Time",
+    "maxDepth": "Maximum Depth",
+    "location": "Location",
+    "equipment": "Equipment",
+    "decompressionTime": "Decompression Time",
+    "notes": "Notes"
+  };
+%>
+<% dives.forEach((dive) => {%>
+  <%- include('dive-item', { dive, keyNames }) %>
+<%})%>
