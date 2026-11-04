@@ -153,6 +153,30 @@ test("createBuddy rejects on an already existing buddy with a 409-shaped error",
   );
 });
 
+test("createBuddy rejects an already existing buddy case-insensitively with a 409-shaped error", async () => {
+  getAll.mockResolvedValueOnce([
+    {
+      _id: "1",
+      name: "John Doe",
+      certification: "Open Water",
+      email: "john@example.com",
+    },
+  ]);
+
+  const result = await createBuddy({
+    name: "jOhN dOe",
+    certification: "Advanced",
+    email: "johndoe@example.com",
+  });
+
+  expect(result).toHaveProperty("ok", false);
+  expect(result.error).toHaveProperty("status", 409);
+  expect(result.error).toHaveProperty(
+    "message",
+    'a dive buddy named "jOhN dOe" already exists',
+  );
+});
+
 test("createBuddy returns a buddy DTO if all buddy data fields are successful", async () => {
   const buddyData = {
     name: "Jane Doe",
