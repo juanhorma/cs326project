@@ -1,10 +1,19 @@
 import { isValidId } from "../repositories/divesRepository.js";
 import * as divesService from "../services/divesService.js";
 
+// htmx marks every request it sends with an HX-Request header. Those get a
+// piece of HTML to swap into the page; anything else (curl, a test, another
+// program) still gets JSON, the same as before.
+const fromHtmx = (req) => req.get('HX-Request') === 'true';
+
 export const index = async (req, res) => {
   const location = req.query.location;
 
   const dives = await divesService.listDives(location);
+  if (fromHtmx(req)) {
+    res.status(200).render("partials/dive-list", { dives });
+    return;
+  }
   res.status(200).render("dives", { dives });
 };
 

@@ -1,0 +1,29 @@
+<li class="dive-item">
+  <details class="dive-details" name="dives-accordion">
+    <summary class="dive-summary">
+      <div class="summary-content">
+        <h3>Date: <%= dive.date %></h3>
+        <h3>Dive Time: <%= dive.diveTime %></h3>
+        <h3>Maximum Depth: <%= dive.maxDepth %></h3>
+      </div>
+    </summary>
+
+
+    <div class="full-content">
+      <% for (const [key, keyAlias] of Object.entries(keyNames)) {%>
+         <% if (dive[key] !== undefined &&
+                dive[key] !== null &&
+                dive[key] !== "" &&
+                key != "date" &&
+                key != "diveTime" &&
+                key != "maxDepth") {%>
+          <h3><%= keyAlias%> : <%= dive[key] %></h3>
+        <%}%>
+      <%}%>
+
+      <a href="/dives/<%= dive.id %>">View Dive</a>
+
+    </div>
+
+  </details>
+</li>

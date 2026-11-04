@@ -30,13 +30,13 @@ This is a web application designed for divers to be able to log information abou
 Follow these steps to use it:
 
 1. On your machine, open your terminal of choice in the directory in which you want the repo, and run the command
-   '''bash
+   ```bash
    git clone https://github.com/juanhorma/cs326project.git
-   '''
+   ```
 2. After clone, run the command
-   '''bash
+   ```bash
    cd cs326project
-   '''
+   ```
 3. At this point, you should make sure you have npm installed before moving on to project dependencies. Follow these steps:
    - npm (acronym for Node Package Manager) is included with Node.js, which you can install from the official Node.js website, https://nodejs.org/en/download.
    - Select the long-term support (LTS) version for your operating system, and download.
@@ -44,34 +44,57 @@ Follow these steps to use it:
    - Close and reopen your terminal.
    - Verify that npm is installed and functioning using:
 
-   '''bash
+   ```bash
    node --version
-   '''
+   ```
 
    and
 
-   '''bash
+   ```bash
    npm --version
-   '''
+   ```
+
    - You should get a version number for both of these if they installed correctly.
 
 4. You should have npm installed now, and you should still be in your project directory. Run:
-   '''bash
+   ```bash
    npm install
-   '''
+   ```
    to install all the dependencies needed for this project. This includes Mongoose, which is used to connect the application to MongoDB.
 5. Start MongoDB by running:
 
-```bash dc-up mongo
-
-```
+   ```bash
+   dc-up mongo
+   ```
 
 6. Then run
    '''bash
    npm start
-   '''
+   ```
    to start the server.
 7. Then open http://localhost:3000/dives in your browser (the dive log). Dive buddies are at http://localhost:3000/buddies.
+
+Note: If you want to actual see the data at the database, you can open a new terminal, go to this director, run
+```bash
+   mongo-dev
+```
+The default go to devdb. Our database name is divelog. To see the database list, run
+```bash
+   show dbs
+```
+then run
+```bash
+   use divelog
+```
+To see the collection
+```bash
+   show collections
+```
+Find the data
+```bash
+   db.dives.find()
+   db.buddies.find()
+```
 
 # Features
 
@@ -105,6 +128,16 @@ Mongo DB `_id` values are converted into string IDs through DTOs. The service la
 3. Expand a dive entry and click "View Dive" to confirm that a separate page displays the correct dive's JSON data using its MongoDB ID.
 4. Confirm that location search and existing form validation still work.
 5. To see saved records directly in MongoDb, run `dev-db` in the terminal, then use `use divelog` and `show collections`. Run `db.dives.find()` ot `db.buddies.find()` to view stored records.
+
+## HTMX interaction
+Before the location search use the traditional GET form which reload the whole page. After implement the HTMX(hx-get), update only the dive log list without the full page reload. The divesCOntroller detects the request from HTMX and will render EJS partial(dive-list.ejs). Also can click the Show all which also use HTMX to restore all dive log without reloading.
+
+### How to Verify
+
+1. Visit /dives. Enter a location and click search.
+2. The page won't reload and unchanged, only the dive list update.
+3. Click Show All to restore all records and clear the search input.
+4. ALso can press F12 open the Developer Tools -> Network to verify that the request is from HTMX
 
 # System Diagram
 
@@ -195,6 +228,10 @@ A design decision I made was to use the existing DTOs and update them to convert
 ### Sprint 2
 
 I took Juan's work on the GET functionality and added the search inside by implementing the filter in the service layer and using the GET query parameters (dives?location=xxx). The alternative option here would be filtering in the client side using JavaScript in app.js to filter the existing dive logs loaded in the browser. The advantage of the server side filtering is fit the existing structure, easier to implement and allow the user easily bookmark or share URLs. If we do the client side filtering, the logic in the app.js is more complex and additional JavaScript logic to manage and update. However, the tradeoff is each search requires a new request and reloads the page, the client side filtering could update the result immediately without reload the page.
+
+### Sprint 3
+
+I decide to use HTMX to implement the location search and show all. HTMX replaces the traditional HTML GET Form which I implemented in Spring 2. The alternative option would keep using the previous one. The reason I switch to HTMX is the location search only needs the matched dive log and the other elements can remain unchanged, so there is no need to reload the whole page. The cost of continuing to use the HTML GET Form will reload the whole page for each search which will reload the content which no need to change.
 
 ## Hope
 

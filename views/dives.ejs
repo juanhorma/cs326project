@@ -5,11 +5,28 @@
     <link rel="stylesheet" href="/style.css">
     <title>DIVELOG</title>
     <%# title specific to this page%>
+    <meta
+      name="htmx-config"
+      content='{
+        "timeout": 5000,
+        "responseHandling": [
+          { "code": "204", "swap": false },
+          { "code": "[23]..", "swap": true },
+          { "code": "[45]..", "swap": true, "error": true, "target": "#status", "swapOverride": "innerHTML" }
+        ]
+      }'
+    >
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   </head>
-  <body>
-      <h1 style="color: white;">Dive Logger</h1>
-      <nav class="site-nav"><a href="/dives">Dive log</a> <a href="/buddies">Dive buddies</a></nav>
+  <body
+    hx-on::before-request="document.querySelector('#status').textContent = ''"
+    hx-on::send-error="document.querySelector('#status').textContent = 'Could not reach the server.'"
+    hx-on::timeout="document.querySelector('#status').textContent = 'The server did not answer within five seconds.'"
+  >
+    <h1 style="color: white;">Dive Logger</h1>
+    <%- include('partials/navigate') %>
 
+    <main>
       <form id="dive-entry">
         <input type="date" name="date" required/>
         <input
@@ -35,64 +52,12 @@
 
       <p id="form-error"></p>
 
-      <form id="search-location" method="GET" action="/dives">
-          <input type="text" name="location" placeholder="Search Location">
-          <button type="submit">Search</button>
-          <a href="/dives">Show all</a>
-      </form>
-
-      <% if (dives.length === 0) { %>
-        <p id="search-message">No matching dives found.</p>
-      <% } %>
-
+      <%- include('partials/search-location-form') %>
+      <%- include('partials/status') %>
       <ul id="dives">
-      <%
-          const keyNames = {
-            "date": "Date",
-            "diveTime": "Dive Time",
-            "maxDepth": "Maximum Depth",
-            "location": "Location",
-            "equipment": "Equipment",
-            "decompressionTime": "Decompression Time",
-            "notes": "Notes"
-          };
-        %>
-        <% dives.forEach((dive) => {%>
-          <li class="dive-item">
-            <details class="dive-details" name="dives-accordion">
-              <summary class="dive-summary">
-                <div class="summary-content">
-                  <h3>Date: <%= dive.date %></h3>
-                  <h3>Dive Time: <%= dive.diveTime %></h3>
-                  <h3>Maximum Depth: <%= dive.maxDepth %></h3>
-                </div>
-              </summary>
-
-
-              <div class="full-content">
-                <% for (const [key, keyAlias] of Object.entries(keyNames)) {%>
-                  <% if (dive[key] !== undefined &&
-                          dive[key] !== null &&
-                          dive[key] !== "" &&
-                          key != "date" &&
-                          key != "diveTime" &&
-                          key != "maxDepth") {%>
-                    <h3><%= keyAlias%> : <%= dive[key] %></h3>
-                  <%}%>
-                <%}%>
-
-                <a href="/dives/<%= dive.id %>">View Dive</a>
-
-              </div>
-
-            </details>
-          </li>
-        <%})%>
-
-
+        <%- include('partials/dive-list', { dives }) %>
       </ul>
-
-
+    </main>
     <script src="/app.js" defer></script>
   </body>
 </html>
