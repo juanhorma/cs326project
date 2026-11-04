@@ -68,29 +68,38 @@ Follow these steps to use it:
    ```
 
 6. Then run
-   '''bash
+   ```bash
    npm start
    ```
    to start the server.
 7. Then open http://localhost:3000/dives in your browser (the dive log). Dive buddies are at http://localhost:3000/buddies.
 
 Note: If you want to actual see the data at the database, you can open a new terminal, go to this director, run
+
 ```bash
    mongo-dev
 ```
+
 The default go to devdb. Our database name is divelog. To see the database list, run
+
 ```bash
    show dbs
 ```
+
 then run
+
 ```bash
    use divelog
 ```
+
 To see the collection
+
 ```bash
    show collections
 ```
+
 Find the data
+
 ```bash
    db.dives.find()
    db.buddies.find()
@@ -130,6 +139,7 @@ Mongo DB `_id` values are converted into string IDs through DTOs. The service la
 5. To see saved records directly in MongoDb, run `dev-db` in the terminal, then use `use divelog` and `show collections`. Run `db.dives.find()` ot `db.buddies.find()` to view stored records.
 
 ## HTMX interaction
+
 Before the location search use the traditional GET form which reload the whole page. After implement the HTMX(hx-get), update only the dive log list without the full page reload. The divesCOntroller detects the request from HTMX and will render EJS partial(dive-list.ejs). Also can click the Show all which also use HTMX to restore all dive log without reloading.
 
 ### How to Verify
@@ -138,6 +148,17 @@ Before the location search use the traditional GET form which reload the whole p
 2. The page won't reload and unchanged, only the dive list update.
 3. Click Show All to restore all records and clear the search input.
 4. ALso can press F12 open the Developer Tools -> Network to verify that the request is from HTMX
+
+## Testing
+
+### What changed
+
+Full jest test suite for both dives and buddies routers added to `__tests__` directory.
+Every service layer function used by controllers is tested on both failure and success scenarios.
+
+### How to see it
+
+Run `npm test`, all 21 tests should pass. Jest runs every test case within the `__tests__` directory.
 
 # System Diagram
 
@@ -204,6 +225,14 @@ after making the POST request, dynammically constructs a new list entry and adds
 The alternative would have been to have the form naturally reload the page with a redirect, where the server builds
 and hydrates the html once more and sends it back to the client. I didn't go down this path as it is slower and results
 in a user experience that is not as smooth as the first option.
+
+### sprint 3
+
+One design decision I made in this sprint was using the 'experimental' jest unstable mock module to mock ESM imports.
+This allowed me to mock the repository functions in order to test the business logic without actually spinning up a
+mongodb instance. The alternative to this would have been to test all service functions with the database running, which would
+have caused havoc when trying to do cleanup later, or in cases where the database is down, testing is impossible. Mocking the
+repository modules isolates testing from the database and therefore doesn't rely on it, making maintenance trustworthy at all times.
 
 ## Amita
 
