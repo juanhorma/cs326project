@@ -105,7 +105,8 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify(dive),
     });
 
-    list.append(buildDiveListItem(saved));
+    document.querySelector("#show-all-button").click();
+
     form.reset();
   } catch (error) {
     errorMessage.textContent = `Your dive was not saved. ${error.message}`;
