@@ -9,3 +9,7 @@
 # sprint 2
 
 - Consulted general css styling guidelines for html input elements and backgrounds
+
+# sprint 3
+
+- Consulted AI coding tools for possible missing test cases

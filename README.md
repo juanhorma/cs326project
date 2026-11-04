@@ -172,6 +172,14 @@ The alternative would have been to have the form naturally reload the page with 
 and hydrates the html once more and sends it back to the client. I didn't go down this path as it is slower and results
 in a user experience that is not as smooth as the first option.
 
+### sprint 3
+
+One design decision I made in this sprint was using the 'experimental' jest unstable mock module to mock ESM imports.
+This allowed me to mock the repository functions in order to test the business logic without actually spinning up a
+mongodb instance. The alternative to this would have been to test all service functions with the database running, which would
+have caused havoc when trying to do cleanup later, or in cases where the database is down, testing is impossible. Mocking the
+repository modules isolates testing from the database and therefore doesn't rely on it, making maintenance trustworthy at all times.
+
 ## Amita
 
 ### Sprint 2
