@@ -68,29 +68,38 @@ Follow these steps to use it:
    ```
 
 6. Then run
-   '''bash
+   ```bash
    npm start
    ```
    to start the server.
 7. Then open http://localhost:3000/dives in your browser (the dive log). Dive buddies are at http://localhost:3000/buddies.
 
 Note: If you want to actual see the data at the database, you can open a new terminal, go to this director, run
+
 ```bash
    mongo-dev
 ```
+
 The default go to devdb. Our database name is divelog. To see the database list, run
+
 ```bash
    show dbs
 ```
+
 then run
+
 ```bash
    use divelog
 ```
+
 To see the collection
+
 ```bash
    show collections
 ```
+
 Find the data
+
 ```bash
    db.dives.find()
    db.buddies.find()
@@ -130,6 +139,7 @@ Mongo DB `_id` values are converted into string IDs through DTOs. The service la
 5. To see saved records directly in MongoDb, run `dev-db` in the terminal, then use `use divelog` and `show collections`. Run `db.dives.find()` ot `db.buddies.find()` to view stored records.
 
 ## HTMX interaction
+
 Before the location search use the traditional GET form which reload the whole page. After implement the HTMX(hx-get), update only the dive log list without the full page reload. The divesCOntroller detects the request from HTMX and will render EJS partial(dive-list.ejs). Also can click the Show all which also use HTMX to restore all dive log without reloading.
 
 ### How to Verify
