@@ -4,6 +4,9 @@
   "description": "| Name            | GitHub Username  | | --------------- | ---------------- | | Juan Hormaechea | juanhorma        | | Amita Vellal    | avellal20        | | Jingpei Wu      | Gingpui-Ng       | | Hope Roundcount | hroundcountUMASS |",
   "main": "index.js",
   "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./public/output.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./public/output.css --watch",
+    "prestart": "npm run build:css",
     "start": "node server.js",
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
@@ -25,6 +28,8 @@
     "mongoose": "^9.11.4"
   },
   "devDependencies": {
-    "jest": "^30.5.2"
+    "@tailwindcss/cli": "^4.3.4",
+    "jest": "^30.5.2",
+    "tailwindcss": "^4.3.4"
   }
 }

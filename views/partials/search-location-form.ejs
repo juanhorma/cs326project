@@ -1,16 +1,26 @@
 <form
   id="search-location"
+  class="flex flex-col gap-2 rounded-2xl bg-slate-900/80 p-4 ring-1 ring-white/10 backdrop-blur sm:flex-row sm:items-center"
   hx-get="/dives"
   hx-target="#dives"
   hx-swap="innerHTML"
   hx-disabled-elt="find button"
 >
-  <input type="text" name="location" placeholder="Search Location">
-  <button type="submit">Search</button>
+  <label for="location-search" class="sr-only">Search by location</label>
+  <input
+    id="location-search"
+    type="text"
+    name="location"
+    placeholder="Search by location"
+    class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none sm:flex-1"
+  >
+    <div class="flex gap-2"></div>
+  <button type="submit" class="flex-1 bg-cyan-500 px-4 py-2 font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:opacity-60 sm:flex-none">Search</button>
 
   <button
     id="show-all-button"
     type="button"
+    class="flex-1 px-4 py-2 font-semibold text-cyan-200 ring-1 ring-cyan-400/50 transition hover:bg-cyan-400/10 disabled:opacity-60 sm:flex-none"
     hx-get="/dives"
     hx-target="#dives"
     hx-swap="innerHTML"
@@ -19,4 +29,5 @@
   >
     Show all
   </button>
+</div>
 </form>

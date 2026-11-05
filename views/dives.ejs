@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/output.css">
     <title>DIVELOG</title>
     <%# title specific to this page%>
     <meta
@@ -19,45 +20,78 @@
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   </head>
   <body
+    class="min-h-screen bg-slate-950 bg-[url('/background.jpg')] bg-cover bg-fixed bg-center text-slate-100 antialiased"
     hx-on::before-request="document.querySelector('#status').textContent = ''"
     hx-on::send-error="document.querySelector('#status').textContent = 'Could not reach the server.'"
     hx-on::timeout="document.querySelector('#status').textContent = 'The server did not answer within five seconds.'"
   >
-    <h1 style="color: white;">Dive Logger</h1>
-    <%- include('partials/navigate') %>
+    <div class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+    <header class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-cyan-300">DIVELOG</p>
+        <h1 class="text-3xl font-bold text-white sm:text-4xl">Dive Logger</h1>
+      </div>
+      <%- include('partials/navigate') %>
+    </header>
 
-    <main>
-      <form id="dive-entry">
-        <input type="date" name="date" required/>
-        <input
-          type="number"
-          name="diveTime"
-          placeholder="Dive time in minutes"
-          min="1"
-          required
-        />
-        <input type="number" name="maxDepth" placeholder="Maximum depth (m)" min="0.1" step="any" required/>
-        <input type="text" name="location" placeholder="Location" />
-        <input type="text" name="equipment" placeholder="Equipment used" />
-        <input
-          type="number"
-          name="decompressionTime"
-          placeholder="Decompression time in minutes"
-          min="0"
-        />
-        <input type="text" name="notes" placeholder="Notes" />
-        <button type="submit">Add dive entry</button>
+    <main class="grid gap-6 md:grid-cols-[20rem_minmax(0,1fr)] md:items-start lg:grid-cols-[22rem_minmax(0,1fr)]">
+      <section class="rounded-2xl bg-slate-900/80 p-5 ring-1 ring-white/10 backdrop-blur md:sticky md:top-6">
+      <h2 class="mb-4 text-lg font-semibold text-white">Log a dive</h2>
+
+      <form id="dive-entry" class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-1">
+        <label class="flex flex-col gap-1 text-sm text-slate-300">
+          Date
+            <input type="date" name="date" required
+              class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 [color-scheme:dark] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
+            </label>
+            <label class="flex flex-col gap-1 text-sm text-slate-300">
+              Dive time (min)
+              <input type="number" name="diveTime" placeholder="45" min="1" required
+                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
+            </label>
+            <label class="flex flex-col gap-1 text-sm text-slate-300">
+              Maximum depth (m)
+              <input type="number" name="maxDepth" placeholder="18" min="0.1" step="any" required
+                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
+            </label>
+            <label class="flex flex-col gap-1 text-sm text-slate-300">
+              Location
+              <input type="text" name="location" placeholder="Blue Hole, Dahab"
+                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
+            </label>
+            <label class="flex flex-col gap-1 text-sm text-slate-300">
+              Equipment used
+              <input type="text" name="equipment" placeholder="BCD, 12L tank"
+                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
+            </label>
+            <label class="flex flex-col gap-1 text-sm text-slate-300">
+              Decompression time (min)
+              <input type="number" name="decompressionTime" placeholder="0" min="0"
+                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
+            </label>
+            <label class="flex flex-col gap-1 text-sm text-slate-300 sm:col-span-2 md:col-span-1">
+              Notes
+              <input type="text" name="notes" placeholder="Visibility, wildlife, conditions…"
+                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
+            </label>
+            <button type="submit"
+              class="mt-1 bg-cyan-500 px-4 py-2.5 font-semibold text-slate-950 transition hover:bg-cyan-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2 md:col-span-1">
+              Add dive entry
+            </button>
       </form>
 
 
-      <p id="form-error"></p>
+      <p id="form-error" role="alert" class="mt-3 text-sm text-rose-300"></p>
+        </section>
 
+        <section class="flex min-w-0 flex-col gap-4">
       <%- include('partials/search-location-form') %>
       <%- include('partials/status') %>
-      <ul id="dives">
+      <ul id="dives" class="flex flex-col gap-3">
         <%- include('partials/dive-list', { dives }) %>
-      </ul>
+      </ul> </section>
     </main>
+  </div>
     <script src="/app.js" defer></script>
   </body>
 </html>

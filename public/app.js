@@ -1,6 +1,5 @@
 const form = document.querySelector("#dive-entry");
 const errorMessage = document.querySelector("#form-error");
-errorMessage.style.color = "white";
 
 const timedFetch = (url, options = {}) =>
   fetch(url, { ...options, signal: AbortSignal.timeout(5000) });

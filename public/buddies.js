@@ -2,13 +2,13 @@ const form = document.querySelector("#buddy-entry");
 const list = document.querySelector("#buddies");
 const emptyMessage = document.querySelector("#buddies-empty");
 const errorMessage = document.querySelector("#form-error");
-errorMessage.style.color = "white";
 
 const buildBuddyListItem = (buddy) => {
   const item = document.createElement("li");
-  item.className = "buddy-item";
+  item.className = "buddy-item rounded-2xl bg-slate-900/80 p-4 ring-1 ring-white/10 backdrop-blur";
 
   const name = document.createElement("h3");
+  name.className = "text-lg font-semibold text-white";
   name.textContent = buddy.name;
   item.append(name);
 
@@ -18,6 +18,7 @@ const buildBuddyListItem = (buddy) => {
   ]) {
     if (buddy[prop]) {
       const detail = document.createElement("span");
+      detail.className = "mt-1 text-sm break-all text-slate-300";
       detail.textContent = `${label}: ${buddy[prop]}`;
       item.append(detail);
     }
