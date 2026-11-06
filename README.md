@@ -124,6 +124,24 @@ Users can click Show all to clear the search and display all saved dive logs aga
 
 # Sprint 3 Changes
 
+## Tailwind restyle
+
+All three pages (`/`, `/dives`, `/buddies`) are now styled with Tailwind CSS classes written in the EJS views. The hand-written `public/style.css` was deleted entirely; Tailwind's input file is `src/input.css`, and `npm run build:css` compiles it to `public/output.css` so that is what we are using and referencing in all files now.
+
+The layout is responsive and changes shape and size. On phones, everything is in a vertical column. The title sits above the nav, the form is on top, the search buttons sit under the search box, dive and buddy cards stack, etc. On larger devices like computers, the form becomes a sticky sidebar on the left and the list fills the right column. The search box and its buttons line up in one row, each dive's summary shows date, time and depth across one row, and buddy cards show two per row.
+
+Every form field ALSO now has a visible label. Also every page has a viewport meta tag so phones render at their real width.
+
+Two client scripts changed so they keep working with the new styles. `public/buddies.js` gives buddies it adds to the page the same Tailwind classes as buddies the server renders, and `public/app.js` and `public/buddies.js` no longer set the error message's color inline, because that would override its Tailwind color, and I decided to go fully with Tailwind formatting for consistency.
+
+### How to see it
+
+1. Run `npm start` (builds the CSS first), or `npm run watch:css` in a second terminal while editing.
+2. Open http://localhost:3000/dives at desktop width: you will know it is up to date if you see the form on the left, and the search and dive cards on the right.
+3. In DevTools, you can sset the width to 375 px: everything stacks into one column with no sideways scrolling.
+4. At both widths, add a dive, search by location, click Show all, and add a buddy on `/buddies`.
+5. Run `node --experimental-vm-modules node_modules/jest/bin/jest.js __tests__/tailwind.test.js` to check the restyle.
+
 ## MongoDB Persistence
 
 Dive log and dive buddies are now stored in MongoDB using Mongoose instead of JSON files. Both repositories support individual database operations (getAll, findById, create, updateById, and removeById). Routes such as `GET /dives`, `POST /dives`, `GET /buddies`, and `POST /buddies` now use MongoDB.
@@ -164,51 +182,69 @@ Run `npm test`, all 21 tests should pass. Jest runs every test case within the `
 
 ```text
 Browser
+   [Note Pages are EJS rendered by the server and styled by public/output.css (Tailwind).]
+   - views/homepage.ejs, views/dives.ejs, views/buddies.ejs, views/partials/*.ejs
+   - public/app.js      sends the dive form as JSON
+   - public/buddies.js  sends the buddy form as JSON, adds the new buddy card to the page
+   - htmx (loaded on dives.ejs) runs the location search and "Show all" w/o a page reload
    |
-   |-- GET /dives?location=xxx --> dives.ejs (HTML)
-   |-- POST /dives (public/app.js sends JSON)
-   |-- GET /buddies
-   |-- POST /buddies (requires browser submit handler)
+   |-- GET  /                      -> homepage.ejs (HTML page)
+   |-- GET  /stats                 -> plain text
+   |-- GET  /dives                 -> dives.ejs (HTML page)
+   |-- GET  /dives?location=xxx    (htmx, HX-Request: true)
+   |                               -> partials/dive-list.ejs (HTML fragment swapped into #dives)
+   |-- POST /dives                 (app.js)      -> JSON
+   |-- GET  /dives/:id             ("View dive") -> JSON
+   |-- GET  /buddies               -> buddies.ejs (HTML page)
+   |-- POST /buddies               (buddies.js)  -> JSON
+   |-- GET  /output.css, /app.js, /buddies.js, /background.jpg (static files from public/)
    |
    v
 server.js
-   - Middleware (static files, JSON, form data)
-   - Mounts /dives and /buddies routers
+   - Connects to MongoDB with mongoose.connect
+   - Middleware: static files from public/, JSON bodies, form data
+   - Mounts /dives and /buddies routers, then a 404 handler and the error-handling middleware
    |
    v
-Routes
-   - dives.js
-   - buddies.js
+Routes                          asyncHandler.js
+   - routes/dives.js     ---->  wraps every controller so a rejected promise
+   - routes/buddies.js          goes to the error-handling middleware
    |
    v
 Controllers
-   - divesController.js
+   - divesController.js    htmx request -> render the partial, otherwise the full page;
+                           checks /dives/:id with divesRepository.isValidId
    - buddiesController.js
-   - Read requests and send HTTP responses
+   - Turn service results into HTTP responses (render EJS or send JSON)
    |
    v
-Services
-   - divesService.js
-   - buddiesService.js
-   - Validation and business rules
-   - Uses DTOs to format data
+Services                                  Jest tests (__tests__/)
+   - divesService.js    <-------------    - divesService.test.js
+   - buddiesService.js  <-------------    - buddiesService.test.js
+   - Validation and business rules          call the services directly
+   - Format records with DTOs 
+     (dtos/diveDto.js, dtos/buddyDto.js) 
+                                          - tailwind.test.js renders the views to check
+                                            the restyle (no server, no database)
    |
    v
 Repositories
-   - divesRepository.js
-   - buddiesRepository.js
-   - Reads saved data
-   - Write when creating data
+   - divesRepository.js     Dive schema and model
+   - buddiesRepository.js   Buddy schema and model
+   - getAll, findById, create, updateById, removeById (one record at a time)
    |
    v
-Storage
-   - dives.json
-   - buddies.json
+MongoDB 
+   - dives collection
+   - buddies collection
 
 Response back to the browser:
-   GET  -> Controller renders EJS -> HTML page
-   POST -> Controller returns JSON -> Browser JavaScript
-           updates the displayed list
+   GET  (normal)  -> controller renders a full EJS page -> HTML
+   GET  (htmx)    -> controller renders partials/dive-list.ejs -> HTML fragment, only #dives changes
+   POST           -> controller returns JSON -> app.js / buddies.js updates the page
+
+CSS build :
+   src/input.css --(Tailwind CLI)--> public/output.css
 ```
 
 Errors: a service returns { ok: false, error: { status, message } } and the controller sends it as JSON (400, 409). Anything thrown or rejected in an async> handler goes through asyncHandler to the error-handling middleware at the end of server.js, which responds with JSON instead of crashing the server. In the browser, fetchJSON() checks response.ok and shows the error under the form.
@@ -259,3 +295,7 @@ I decide to use HTMX to implement the location search and show all. HTMX replace
 ### Sprint 2
 
 For the dive buddies slice I gave buddies their own route, controller, service, repository and JSON file (see buddies.json) instead of adding them as a nested list inside dives.json and extending the dives service. The alternative would have been less code, since one file and one repository would already exist, and a dive could point directly at its buddies. I chose the separate slice because each repository then can live independently of the other one; my goal was that changing what a buddy looks like, or later moving buddies to MongoDB, cannot break how dives are read or written, and a buddy can be added or validated without first loading every dive. The alternative would have made divesService responsible for two unrelated sets of rules (dive validation and buddy name uniqueness) and made every buddy save a rewrite of the whole dive log. The downside of my choice is some duplicated code (we have two near-identical repositories and fetch helpers) and no link yet between a dive and its buddies, which I accept for the scope of this sprint.
+
+### Sprint 3
+
+For the responsive layout on the Dive Log and Dive Buddies pages, I used a CSS grid that puts the form in a fixed-width sidebar next to the list from the `md:` breakpoint up (`md:grid-cols-[20rem_minmax(0,1fr)]`) and stacks them in one column on phones. The other alternative option was to keep the Sprint 2 layout, with the form on top and the list underneath at every width, and just center it with a max width. That would have needed fewer classes and no breakpoint logic. I chose the sidebar because on a desktop the stacked layout pushes the dive list below seven form fields, so you scroll past the form every time you want to see your dives, while side by side you can add a dive and watch the list update without leaving the form (the sidebar is also `md:sticky`, so it stays in view on a long list). The downside of my choice was extra work and one bug that I accidentally created. There was an extra closing div, and with two columns, every opening and closing tag has to be in the right column, and a stray `</div>` in the search form pushed the dive list out of the right column until Amita spotted it. Because of that I added a test that checks every view closes the tags it opens. The stacked alternative would have avoided that risk but wasted most of a 1280 px screen.

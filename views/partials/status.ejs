@@ -1,7 +1,7 @@
 <p
   id="status"
   role="status"
-  style="color: white;"
+  class="text-sm text-amber-200 empty:hidden"
   aria-live="polite"
   <% if (locals.oob) { %>hx-swap-oob="innerHTML"<% } %>
 ><%= locals.message || '' %></p>
