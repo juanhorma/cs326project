@@ -228,9 +228,9 @@ Services                                  Jest tests (__tests__/)
                                             the restyle (no server, no database)
    |
    v
-Repositories
-   - divesRepository.js     Dive schema and model
-   - buddiesRepository.js   Buddy schema and model
+Repositories  < - - - - - - - - - - - - - (tests replace repositories with
+   - divesRepository.js                    jest.unstable_mockModule, so they
+   - buddiesRepository.js                  never reach MongoDB)
    - getAll, findById, create, updateById, removeById (one record at a time)
    |
    v
