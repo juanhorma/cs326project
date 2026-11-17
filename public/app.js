@@ -52,6 +52,20 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify(dive),
     });
 
+    const divesList = document.querySelector("#dives");
+    divesList.addEventListener(
+      "htmx:afterSettle",
+      () => {
+        const summaries = divesList.querySelectorAll("summary");
+        if (summaries.length > 0) {
+          summaries[summaries.length - 1].focus();
+        } else {
+          divesList.focus();
+        }
+      },
+      { once: true },
+    );
+
     document.querySelector("#show-all-button").click();
 
     form.reset();
