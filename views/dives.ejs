@@ -87,7 +87,7 @@
         <section class="flex min-w-0 flex-col gap-4">
       <%- include('partials/search-location-form') %>
       <%- include('partials/status') %>
-      <ul id="dives" class="flex flex-col gap-3">
+      <ul id="dives" tabindex="-1" class="flex flex-col gap-3 focus:outline-none">
         <%- include('partials/dive-list', { dives }) %>
       </ul> </section>
     </main>

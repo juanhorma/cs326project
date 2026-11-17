@@ -178,6 +178,19 @@ Every service layer function used by controllers is tested on both failure and s
 
 Run `npm test`, all 21 tests should pass. Jest runs every test case within the `__tests__` directory.
 
+# Sprint 4 Changes
+
+## Accessibility Audit Fixes
+
+### What changed
+
+- After form submission within the /dives route, focus was move to the newly created entry.
+- After form submission within the /buddies route, focus was returned to the first input field of the form.
+
+### How to see it
+
+Use the keyboard to tab through the form in /dives and /buddies, filling in each required field. Then, click enter on keyboard to submit the form, the focus should now lie on the new dive log if located in the /dives route, or on the first form field if located in the /buddies route.
+
 # System Diagram
 
 ```text
@@ -222,8 +235,8 @@ Services                                  Jest tests (__tests__/)
    - divesService.js    <-------------    - divesService.test.js
    - buddiesService.js  <-------------    - buddiesService.test.js
    - Validation and business rules          call the services directly
-   - Format records with DTOs 
-     (dtos/diveDto.js, dtos/buddyDto.js) 
+   - Format records with DTOs
+     (dtos/diveDto.js, dtos/buddyDto.js)
                                           - tailwind.test.js renders the views to check
                                             the restyle (no server, no database)
    |
@@ -234,7 +247,7 @@ Repositories  < - - - - - - - - - - - - - (tests replace repositories with
    - getAll, findById, create, updateById, removeById (one record at a time)
    |
    v
-MongoDB 
+MongoDB
    - dives collection
    - buddies collection
 
