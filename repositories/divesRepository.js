@@ -9,6 +9,7 @@ const diveSchema = new mongoose.Schema(
     decompressionTime: Number,
     maxDepth: { type: Number, required: true },
     notes: String,
+    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: true },
 );
