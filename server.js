@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import divesRouter from "./routes/dives.js";
 import buddiesRouter from "./routes/buddies.js";
+import authRouter from "./routes/auth.js";
+import { attachUser } from "./middleware/attachUser.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 
@@ -49,6 +51,8 @@ app.get("/stats", (req, res) => {
 
 app.use("/dives", divesRouter);
 app.use("/buddies", buddiesRouter);
+app.use(attachUser);
+app.use(authRouter);
 
 app.use((req, res) => {
   res.status(404).send("Page not found.");
