@@ -8,5 +8,7 @@ router.post("/signup", asyncHandler(authController.signup));
 router.post("/login", asyncHandler(authController.login));
 router.post("/logout", asyncHandler(authController.logout));
 router.get("/me", authController.me);
+router.get("/signup", authController.signupPage);
+router.get("/login", authController.loginPage);
 
 export default router;

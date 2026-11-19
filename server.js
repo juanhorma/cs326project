@@ -37,6 +37,10 @@ app.use(
   }),
 );
 
+// Attach logged-in user and register authentication routes
+app.use(attachUser);
+app.use(authRouter);
+
 // Home page
 app.get("/", (req, res) => {
   res.status(200).render("homepage");
@@ -51,8 +55,6 @@ app.get("/stats", (req, res) => {
 
 app.use("/dives", divesRouter);
 app.use("/buddies", buddiesRouter);
-app.use(attachUser);
-app.use(authRouter);
 
 app.use((req, res) => {
   res.status(404).send("Page not found.");

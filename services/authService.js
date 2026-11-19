@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { Ok, Err } from "../result.js";
-import * as usersRepository from "../repositories/userRepository.js";
+import * as usersRepository from "../repositories/usersRepository.js";
 import { toUserDto } from "../dtos/userDto.js";
 
 export const signup = async ({ email, password } = {}) => {

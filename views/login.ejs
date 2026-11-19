@@ -1,0 +1,42 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Log in - DIVELOG</title>
+  </head>
+  <body>
+    <main>
+      <h1>Log in</h1>
+
+      <form method="POST" action="/login">
+        <% if (error) { %>
+          <p role="alert"><%= error %></p>
+        <% } %>
+
+        <label for="login-email">Email</label>
+        <input
+          type="email"
+          id="login-email"
+          name="email"
+          value="<%= email %>"
+          autocomplete="email"
+          required
+        >
+
+        <label for="login-password">Password</label>
+        <input
+          type="password"
+          id="login-password"
+          name="password"
+          autocomplete="current-password"
+          required
+        >
+
+        <button type="submit">Log in</button>
+      </form>
+
+      <p>New here? <a href="/signup">Sign up</a>.</p>
+    </main>
+  </body>
+</html>
