@@ -2,20 +2,38 @@ import express from "express";
 import mongoose from "mongoose";
 import divesRouter from "./routes/dives.js";
 import buddiesRouter from "./routes/buddies.js";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-await mongoose.connect(
-  process.env.MONGODB_URI ||
-    "mongodb://dev:devpassword@mongo:27017/divelog?authSource=admin",
-);
+const mongoUrl = process.env.MONGODB_URI;
+const sessionSecret = process.env.SESSION_SECRET;
+
+if (!mongoUrl || !sessionSecret) {
+  throw new Error("MONGODB_URI and SESSION_SECRET must be set.");
+}
+
+await mongoose.connect(mongoUrl);
 
 app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Session configuration
+app.use(
+  session({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl,
+    }),
+  }),
+);
 
 // Home page
 app.get("/", (req, res) => {
