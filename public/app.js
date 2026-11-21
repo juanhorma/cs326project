@@ -1,6 +1,10 @@
 const form = document.querySelector("#dive-entry");
 const errorMessage = document.querySelector("#form-error");
 
+if (form?.elements?.date) {
+  form.elements.date.max = new Date().toLocaleDateString("en-CA");
+}
+
 const timedFetch = (url, options = {}) =>
   fetch(url, { ...options, signal: AbortSignal.timeout(5000) });
 

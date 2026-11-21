@@ -251,6 +251,71 @@ test("createDive rejects a missing body", async () => {
   );
 });
 
+test("createDive rejects a future date", async () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toLocaleDateString("en-CA");
+
+  const tomorrowResult = await createDive({
+    date: tomorrowStr,
+    diveTime: 34,
+    maxDepth: 55,
+  });
+
+  expect(tomorrowResult).toHaveProperty("ok", false);
+  expect(tomorrowResult.error).toHaveProperty("status", 400);
+  expect(tomorrowResult.error).toHaveProperty(
+    "message",
+    "date cannot be in the future",
+  );
+
+  const farFutureResult = await createDive({
+    date: "2099-01-01",
+    diveTime: 34,
+    maxDepth: 55,
+  });
+
+  expect(farFutureResult).toHaveProperty("ok", false);
+  expect(farFutureResult.error).toHaveProperty("status", 400);
+  expect(farFutureResult.error).toHaveProperty(
+    "message",
+    "date cannot be in the future",
+  );
+});
+
+test("createDive rejects an invalid date", async () => {
+  const result = await createDive({
+    date: "not-a-date",
+    diveTime: 34,
+    maxDepth: 55,
+  });
+
+  expect(result).toHaveProperty("ok", false);
+  expect(result.error).toHaveProperty("status", 400);
+  expect(result.error).toHaveProperty("message", "date must be a valid date");
+});
+
+test("createDive accepts today's date", async () => {
+  const todayStr = new Date().toLocaleDateString("en-CA");
+  const result = await createDive({
+    date: todayStr,
+    diveTime: 34,
+    decompressionTime: 0,
+    maxDepth: 30,
+  });
+
+  expect(result).toHaveProperty("ok", true);
+  expect(result.value).toStrictEqual(
+    toDiveDto({
+      _id: "fake-id",
+      date: todayStr,
+      diveTime: 34,
+      decompressionTime: 0,
+      maxDepth: 30,
+    }),
+  );
+});
+
 test("createDive returns DTO of compliant dive data", async () => {
   const compliantDive = {
     date: "2026/07/23",
