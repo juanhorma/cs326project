@@ -67,12 +67,15 @@ Follow these steps to use it:
    dc-up mongo
    ```
 
-6. Then run
+6. Configure authentication by copying `.env.example` to `.env` and setting `MONGODB_URI` and `SESSION_SECRET`. Do not commit `.env` to GitHub.
+7. Then run
    ```bash
    npm start
    ```
    to start the server.
-7. Then open http://localhost:3000/dives in your browser (the dive log). Dive buddies are at http://localhost:3000/buddies.
+8. Then open http://localhost:3000 in your browser.
+9. Navigate to `/signup` to create an account, then `/login` to log in.
+10. Once logged in, visit `/dives` to manage dives or `/buddies` to manage dive buddies. Click logout in the navigation bar to end your session.
 
 Note: If you want to actual see the data at the database, you can open a new terminal, go to this director, run
 
@@ -178,6 +181,22 @@ Every service layer function used by controllers is tested on both failure and s
 
 Run `npm test`, all 21 tests should pass. Jest runs every test case within the `__tests__` directory.
 
+# Sprint 4 Changes
+
+## Session-Based Authentication
+
+DiveLog now supports user authentication, allowing users to sign up, log in, and logout throughout the browser. Passwords are securely hashed using bcrypt, while `express-session` manages user sessions and `connect-mongo` stores them in MongoDB. This allows users to stay logged in across requests and server restarts while their sessions remain valid. User authentication routes, controllers, service, repository, and middleware were added to manage login sessions and identify the currently logged in user. User roles (member and admin) were also created, and the navigation section was updated to display the user's login status and an option to logout.
+
+### How to verify:
+
+1. Start MongoDB with dc-up mongo, then run npm start.
+2. Visit /signup and create a new account using an email and password.
+3. Navigate to /login and log in with the newly created account. Confirm that the navigation bar displays the logged-in user and logout option.
+4. Refresh the page and navigate between /dives and /buddies to confirm that the user remains logged in.
+5. Log out using the navigation bar and confirm that the login and signup options reappear.
+6. Log in again, restart the server, and refresh the browser to verify that the MongoDB-backed session remains valid.
+7. To inspect stored sessions, open MongoDB using `mongo-dev`, run `use divelog`, and use show collections to locate the session collection (typically sessions).
+
 # System Diagram
 
 ```text
@@ -222,8 +241,8 @@ Services                                  Jest tests (__tests__/)
    - divesService.js    <-------------    - divesService.test.js
    - buddiesService.js  <-------------    - buddiesService.test.js
    - Validation and business rules          call the services directly
-   - Format records with DTOs 
-     (dtos/diveDto.js, dtos/buddyDto.js) 
+   - Format records with DTOs
+     (dtos/diveDto.js, dtos/buddyDto.js)
                                           - tailwind.test.js renders the views to check
                                             the restyle (no server, no database)
    |
@@ -234,7 +253,7 @@ Repositories  < - - - - - - - - - - - - - (tests replace repositories with
    - getAll, findById, create, updateById, removeById (one record at a time)
    |
    v
-MongoDB 
+MongoDB
    - dives collection
    - buddies collection
 
@@ -279,6 +298,10 @@ One design decision I made was to validate the dive entry fields in the service 
 ### Sprint 3
 
 A design decision I made was to use the existing DTOs and update them to convert MongoDB's `_id` values into string id values for dives and buddies. An alternative option here would have been to pass MongoDB's `_id` values directly through the repositories, services, and controllers to the frontend which would be ok for some smaller applications. The DTO approach felt like the better choice here because now DiveLog can consistently reference dives and buddies using just an id field without exposing any MongoDB specific details throughout other parts of the application. Now the new `GET /dives/:id` route and "View Dive" link can use a consistent ID format to retrieve individual dive records, whereas otherwise, the controllers and views would need to handle MongoDB's `_id` structure directly, requiring additional changes and making future database changes more difficult.
+
+### Sprint 4
+
+For Sprint 4, I chose to implement authentication using `express-session` with `connect-mongo` to manage user sessions and store them in MongoDB. This allows DiveLog to maintain login sessions across requests and server restarts. An alternative would’ve been to use Express’s default in-memory mechanism which would have been much easier to set up and wouldn’t require connecting session storage to MongoDB. Since DiveLog already uses MongoDB to store dives and buddies, using the same database for sessions was the more practical choice and allows for users to stay logged in even after the server restarts. The main tradeoff of doing this was that `connect-mongo` requires additional configuration and a working MongoDB connection. However choosing in-memory sessions would mean that all active sessions are lost whenever the server restarts, forcing users to log in again every time.
 
 ## Jingpei
 
