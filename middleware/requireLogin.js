@@ -10,7 +10,10 @@ export const requireLogin = (req, res, next) => {
     }
 
     // redirect regular form submissions
-    if (req.is("application/x-www-form-urlencoded")) {
+    if (
+      req.is("application/x-www-form-urlencoded") ||
+      req.accepts(["json", "html"]) === "html"
+    ) {
       res.redirect(303, "/login");
       return;
     }
