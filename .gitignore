@@ -1,4 +1,6 @@
 node_modules/
 .env
+.env.*
+!.env.example
 github.json
 public/output.css
