@@ -4,6 +4,7 @@ import divesRouter from "./routes/dives.js";
 import buddiesRouter from "./routes/buddies.js";
 import authRouter from "./routes/auth.js";
 import { attachUser } from "./middleware/attachUser.js";
+import { requireLogin } from "./middleware/requireLogin.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 
@@ -42,7 +43,7 @@ app.use(attachUser);
 app.use(authRouter);
 
 // Home page
-app.get("/", (req, res) => {
+app.get("/", requireLogin, (req, res) => {
   res.status(200).render("homepage");
 });
 
@@ -53,8 +54,8 @@ app.get("/stats", (req, res) => {
   );
 });
 
-app.use("/dives", divesRouter);
-app.use("/buddies", buddiesRouter);
+app.use("/dives", requireLogin, divesRouter);
+app.use("/buddies", requireLogin, buddiesRouter);
 
 app.use((req, res) => {
   res.status(404).send("Page not found.");
