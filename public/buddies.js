@@ -22,7 +22,21 @@ const buildBuddyListItem = (buddy) => {
       detail.textContent = `${label}: ${buddy[prop]}`;
       item.append(detail);
     }
-  }
+    }
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className =
+    "mt-3 px-3 py-1.5 text-sm font-semibold text-rose-200 ring-1 ring-rose-400/50 transition hover:bg-rose-500/20 disabled:opacity-60";
+  remove.setAttribute("aria-label", `Delete ${buddy.name}`);
+  remove.setAttribute("hx-delete", `/buddies/${buddy.id}`);
+  remove.setAttribute("hx-target", "closest li");
+  remove.setAttribute("hx-swap", "outerHTML");
+  remove.setAttribute("hx-confirm", "Delete this buddy?");
+  remove.setAttribute("hx-disabled-elt", "this");
+  remove.textContent = "Delete";
+  item.append(remove);
+
   return item;
 };
 
@@ -64,7 +78,9 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify(buddy),
     });
 
-    list.append(buildBuddyListItem(saved));
+    const item = buildBuddyListItem(saved);
+    list.append(item);
+    htmx.process(item);
     emptyMessage.hidden = true;
     form.reset();
   } catch (error) {
