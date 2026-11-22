@@ -2,4 +2,26 @@
   <a href="/" class="px-4 py-2 text-slate-200 ring-1 ring-white/15 transition hover:bg-white/10 hover:text-white">Home</a>
   <a href="/dives" class="px-4 py-2 text-slate-200 ring-1 ring-white/15 transition hover:bg-white/10 hover:text-white">Dive log</a>
   <a href="/buddies" class="px-4 py-2 text-slate-200 ring-1 ring-white/15 transition hover:bg-white/10 hover:text-white">Dive buddies</a>
+
+  <% if (locals.user) { %>
+  <span id="signed-in" class="px-2 py-2 text-slate-200">
+    Signed in as <%= user.email %>
+  </span>
+
+  <form method="POST" action="/logout">
+    <button type="submit" id="logout"
+      class="px-4 py-2 text-slate-200 ring-1 ring-white/15 transition hover:bg-white/10 hover:text-white">
+      Log out
+    </button>
+  </form>
+  <% } else { %>
+    <a href="/login" id="login-link"
+    class="px-4 py-2 text-slate-200 ring-1 ring-white/15 transition hover:bg-white/10 hover:text-white">
+    Log in</a>
+
+    <a href="/signup" id="signup-link"
+    class="px-4 py-2 text-slate-200 ring-1 ring-white/15 transition hover:bg-white/10 over:text-white">
+    Sign up
+  </a>
+  <% } %>
 </nav>
