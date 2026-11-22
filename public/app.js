@@ -61,3 +61,15 @@ form.addEventListener("submit", async (event) => {
     button.disabled = false;
   }
 });
+
+document.body.addEventListener('htmx:beforeSwap', (event) => {
+  if (event.detail.xhr.status === 200 &&
+      event.detail.requestConfig.verb === "delete" &&
+      document.querySelector("#dives").querySelectorAll(".dive-item").length === 1) {
+    const item = document.createElement("li");
+    item.id = "search-message";
+    item.className = "rounded-2xl bg-slate-900/80 p-6 text-center text-slate-300 ring-1 ring-white/10 backdrop-blur";
+    item.textContent = "No matching dives found.";
+    document.querySelector("#dives").append(item);
+  }
+});

@@ -89,3 +89,11 @@ form.addEventListener("submit", async (event) => {
     button.disabled = false;
   }
 });
+
+document.body.addEventListener('htmx:beforeSwap', (event) => {
+ if (event.detail.xhr.status === 200 &&
+     event.detail.requestConfig.verb === "delete" &&
+     list.querySelectorAll(".buddy-item").length === 1) {
+   emptyMessage.hidden = false;
+ }
+});
