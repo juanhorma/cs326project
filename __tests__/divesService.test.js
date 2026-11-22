@@ -260,7 +260,7 @@ test("createDive returns DTO of compliant dive data", async () => {
     decompressionTime: 0,
     maxDepth: 30,
   };
-  const compliantResult = await createDive(compliantDive);
+  const compliantResult = await createDive(compliantDive, { id: "alice-id", role: "member" })
 
   compliantDive["_id"] = "fake-id";
   expect(compliantResult).toHaveProperty("ok", true);

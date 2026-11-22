@@ -189,7 +189,7 @@ test("createBuddy returns a buddy DTO if all buddy data fields are successful", 
     ...buddyData,
   });
 
-  const result = await createBuddy(buddyData);
+  const result = await createBuddy(buddyData, { id: "alice-id", role: "member" });
 
   expect(result).toHaveProperty("ok", true);
   expect(result.value).toStrictEqual(
