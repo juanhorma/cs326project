@@ -7,6 +7,7 @@
     <title>DIVELOG - Dive Buddies</title>
   </head>
   <body class="min-h-screen bg-slate-950 bg-[url('/background.jpg')] bg-cover bg-fixed bg-center text-slate-100 antialiased">
+    <div class="min-h-screen bg-slate-950/80">
     <div class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
       <header class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
@@ -24,17 +25,17 @@
                     <label class="flex flex-col gap-1 text-sm text-slate-300 sm:col-span-2 md:col-span-1">
               Name
               <input type="text" name="name" placeholder="Buddy name" maxlength="100" required
-                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
+                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
             </label>
             <label class="flex flex-col gap-1 text-sm text-slate-300">
               Certification
               <input type="text" name="certification" placeholder="PADI Open Water"
-                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
+                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
             </label>
             <label class="flex flex-col gap-1 text-sm text-slate-300">
               Email
               <input type="email" name="email" placeholder="buddy@example.com"
-                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
+                class="w-full rounded-lg border border-white/15 bg-slate-950/60 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/40 focus:outline-none" />
             </label>
             <button type="submit"
               class="mt-1 bg-cyan-500 px-4 py-2.5 font-semibold text-slate-950 transition hover:bg-cyan-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2 md:col-span-1">
@@ -60,6 +61,7 @@
       </ul>
     </section>
     </main>
+    </div>
     </div>
     <script src="/buddies.js" defer></script>
   </body>
