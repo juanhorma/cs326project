@@ -186,10 +186,22 @@ Run `npm test`, all 21 tests should pass. Jest runs every test case within the `
 
 - After form submission within the /dives route, focus was move to the newly created entry.
 - After form submission within the /buddies route, focus was returned to the first input field of the form.
+- Wrapped page content in home page, dives and buddies routes in a dark scrim over the background to ensure minimum contrast ratio of 4.5:1
+- Lightened placeholder text color across all form inputs to meet contrast requirements
+- Update the location search form to move focus to the 'search all' button after submission
 
 ### How to see it
 
 Use the keyboard to tab through the form in /dives and /buddies, filling in each required field. Then, click enter on keyboard to submit the form, the focus should now lie on the new dive log if located in the /dives route, or on the first form field if located in the /buddies route.
+
+Open developer tools, move to the accessibility tab, on issues select contrast. If there are contrast issues, those will be shown indicating the element in question. Otherwise, no issues will be shown.
+
+Use the keyboard to tab over to the search location form within the dives route. Click on search, the focus should automatically move to search all.
+
+### Changes unrelated to accessibility
+
+- Added a maximum date constraint to the dives creation form input element to prevent logging dives in the future.
+- Added a validation rule to divesService to prevent creating a new dive with a date in the future with respect to the user's timezone.
 
 # System Diagram
 
@@ -282,6 +294,24 @@ This allowed me to mock the repository functions in order to test the business l
 mongodb instance. The alternative to this would have been to test all service functions with the database running, which would
 have caused havoc when trying to do cleanup later, or in cases where the database is down, testing is impossible. Mocking the
 repository modules isolates testing from the database and therefore doesn't rely on it, making maintenance trustworthy at all times.
+
+### sprint 4
+
+Three design decisions I made:
+
+- Moving focus to the newly created dive entry after form submission
+- Moving focus to the first input field of the buddies creation form after submission
+- Moving focus to the 'search all' button upon initiating a location search for dives.
+
+A credible alternative to the last decision:
+
+- Moving focus to the first or last dive entry present in the updated list after a search
+
+Why the shipped version is better:
+
+- It doesn't assume which dive in the filtered list the user wants to see. Instead, it places the tab location one click away from moving into the first entry of the list. Otherwise, the user can just press enter to return to the full list of dives.
+
+The alternative would have made possible false assumptions on the user's intention by placing focus on a dive they may not be interested in, making a decision that belongs to them. Also, additional logic would have had to be placed to handle the case where the filtered list is empty as no dives match a location so focus doesn't get lost.
 
 ## Amita
 
