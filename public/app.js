@@ -1,6 +1,10 @@
 const form = document.querySelector("#dive-entry");
 const errorMessage = document.querySelector("#form-error");
 
+if (form?.elements?.date) {
+  form.elements.date.max = new Date().toLocaleDateString("en-CA");
+}
+
 const timedFetch = (url, options = {}) =>
   fetch(url, { ...options, signal: AbortSignal.timeout(5000) });
 
@@ -51,6 +55,20 @@ form.addEventListener("submit", async (event) => {
       },
       body: JSON.stringify(dive),
     });
+
+    const divesList = document.querySelector("#dives");
+    divesList.addEventListener(
+      "htmx:afterSettle",
+      () => {
+        const summaries = divesList.querySelectorAll("summary");
+        if (summaries.length > 0) {
+          summaries[summaries.length - 1].focus();
+        } else {
+          divesList.focus();
+        }
+      },
+      { once: true },
+    );
 
     document.querySelector("#show-all-button").click();
 

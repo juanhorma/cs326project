@@ -5,7 +5,8 @@ const errorMessage = document.querySelector("#form-error");
 
 const buildBuddyListItem = (buddy) => {
   const item = document.createElement("li");
-  item.className = "buddy-item rounded-2xl bg-slate-900/80 p-4 ring-1 ring-white/10 backdrop-blur";
+  item.className =
+    "buddy-item rounded-2xl bg-slate-900/80 p-4 ring-1 ring-white/10 backdrop-blur";
 
   const name = document.createElement("h3");
   name.className = "text-lg font-semibold text-white";
@@ -29,7 +30,10 @@ const buildBuddyListItem = (buddy) => {
 const fetchJSON = async (url, options) => {
   let response;
   try {
-    response = await fetch(url, { ...options, signal: AbortSignal.timeout(5000) });
+    response = await fetch(url, {
+      ...options,
+      signal: AbortSignal.timeout(5000),
+    });
   } catch (error) {
     throw new Error(
       error.name === "TimeoutError"
@@ -67,6 +71,7 @@ form.addEventListener("submit", async (event) => {
     list.append(buildBuddyListItem(saved));
     emptyMessage.hidden = true;
     form.reset();
+    form.querySelector("input").focus();
   } catch (error) {
     errorMessage.textContent = `Your buddy was not saved. ${error.message}`;
   } finally {
