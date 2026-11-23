@@ -13,3 +13,7 @@
 # sprint 3
 
 - Consulted AI coding tools for possible missing test cases
+
+# sprint 4
+
+- Asked Gemini for strategies to evaluate the contrast of a web page and most common changes to css properties to remedy contrast issues.

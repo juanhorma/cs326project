@@ -20,6 +20,36 @@ const validateDive = ({
     };
   }
 
+  const parsedDate = /^\d{4}-\d{2}-\d{2}$/.test(date)
+    ? (() => {
+        const [year, month, day] = date.split("-").map(Number);
+        return new Date(year, month - 1, day);
+      })()
+    : new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        message: "date must be a valid date",
+      },
+    };
+  }
+
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+
+  if (parsedDate > endOfToday) {
+    return {
+      ok: false,
+      error: {
+        status: 400,
+        message: "date cannot be in the future",
+      },
+    };
+  }
+
   if (
     !Number.isFinite(diveTime) ||
     diveTime <= 0 ||
