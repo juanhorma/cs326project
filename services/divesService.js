@@ -1,4 +1,4 @@
-import { getAll, create, findById } from "../repositories/divesRepository.js";
+import { getAll, create, findById, updateById, removeById } from "../repositories/divesRepository.js";
 import { toDiveDto } from "../dtos/diveDto.js";
 
 const validateDive = ({
@@ -93,6 +93,11 @@ const validateDive = ({
   };
 };
 
+const isOwnerOrAdmin = (dive, actor) => {
+  if (dive.ownerId?.toString() === actor.id) return true;
+  return actor.role === "admin";
+};
+
 export const listDives = async (location) => {
   const dives = await getAll();
 
@@ -106,7 +111,7 @@ export const listDives = async (location) => {
   return dives.map(toDiveDto);
 };
 
-export const createDive = async (data) => {
+export const createDive = async (data, actor) => {
   const result = validateDive(data);
 
   if (!result.ok) {
@@ -115,7 +120,7 @@ export const createDive = async (data) => {
 
   return {
     ok: true,
-    value: toDiveDto(await create(result.value)),
+    value: toDiveDto(await create({...result.value, ownerId: actor.id })),
   };
 };
 
@@ -133,4 +138,50 @@ export const getDiveById = async (id) => {
     ok: true,
     value: toDiveDto(dive),
   };
+};
+
+export const getDiveForEdit = async (id, actor) => {
+  const existing = await findById(id);
+  if (!existing) {
+    return { ok: false, error: { status: 404, message: "Dive not found" } };
+  }
+  if (!isOwnerOrAdmin(existing, actor)) {
+    return {
+      ok: false,
+      error: { status: 403, message: "You do not have permission to modify this dive" },
+    };
+  }
+  return { ok: true, value: toDiveDto(existing) };
+};
+
+export const updateDive = async (id, data, actor) => {
+  const existing = await findById(id);
+  if (!existing) {
+    return { ok: false, error: { status: 404, message: "Dive not found" } };
+  }
+  if (!isOwnerOrAdmin(existing, actor)) {
+    return {
+      ok: false,
+      error: { status: 403, message: "You do not have permission to modify this dive" },
+    };
+  }
+
+  const result = validateDive(data);
+  if (!result.ok) return result;
+  return { ok: true, value: toDiveDto(await updateById(id, result.value)) };
+};
+
+export const deleteDive = async (id, actor) => {
+  const existing = await findById(id);
+  if (!existing) {
+    return { ok: false, error: { status: 404, message: "Dive not found" } };
+  }
+  if (!isOwnerOrAdmin(existing, actor)) {
+    return {
+      ok: false,
+      error: { status: 403, message: "You do not have permission to delete this dive" },
+    };
+  }
+  await removeById(id);
+  return { ok: true, value: null };
 };

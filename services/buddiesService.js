@@ -1,4 +1,4 @@
-import { getAll, create } from "../repositories/buddiesRepository.js";
+import { getAll, create, findById, updateById, removeById } from "../repositories/buddiesRepository.js";
 import { toBuddyDto } from "../dtos/buddyDto.js";
 
 const MAX_NAME_LENGTH = 100;
@@ -40,12 +40,17 @@ const validateBuddy = (data) => {
   return { ok: true, value: cleaned };
 };
 
+const isOwnerOrAdmin = (buddy, actor) => {
+  if (buddy.ownerId?.toString() === actor.id) return true;
+  return actor.role === "admin";
+};
+
 export const listBuddies = async () => {
   const buddies = await getAll();
   return buddies.map(toBuddyDto);
 };
 
-export const createBuddy = async (data) => {
+export const createBuddy = async (data, actor) => {
   const result = validateBuddy(data);
 
   if (!result.ok) {
@@ -64,5 +69,43 @@ export const createBuddy = async (data) => {
     );
   }
 
-  return { ok: true, value: toBuddyDto(await create(result.value)) };
+  return { ok: true, value: toBuddyDto(await create({ ...result.value, ownerId: actor.id })),};
+};
+
+export const getBuddyForEdit = async (id, actor) => {
+  const existing = await findById(id);
+  if (!existing) return fail(404, "Buddy not found");
+  if (!isOwnerOrAdmin(existing, actor)) {
+    return fail(403, "You do not have permission to modify this buddy");
+  }
+  return { ok: true, value: toBuddyDto(existing) };
+};
+
+export const updateBuddy = async (id, data, actor) => {
+  const existing = await findById(id);
+  if (!existing) return fail(404, "Buddy not found");
+  if (!isOwnerOrAdmin(existing, actor)) {return fail(403, "You do not have permission to modify this buddy");}
+  const result = validateBuddy(data);
+  if (!result.ok) return result;
+  const buddies = await getAll();
+  const taken = buddies.some(
+    (buddy) =>
+      buddy._id.toString() !== existing._id.toString() &&
+      buddy.name.toLowerCase() === result.value.name.toLowerCase(),
+  );
+  if (taken) {
+    return fail(409, `a dive buddy named "${result.value.name}" already exists`);
+  }
+
+  return { ok: true, value: toBuddyDto(await updateById(id, result.value)) };
+};
+
+export const deleteBuddy = async (id, actor) => {
+  const existing = await findById(id);
+  if (!existing) return fail(404, "Buddy not found");
+  if (!isOwnerOrAdmin(existing, actor)) {
+    return fail(403, "You do not have permission to delete this buddy");
+  }
+  await removeById(id);
+  return { ok: true, value: null };
 };

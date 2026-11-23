@@ -5,6 +5,13 @@ import * as divesService from "../services/divesService.js";
 // piece of HTML to swap into the page; anything else (curl, a test, another
 // program) still gets JSON, the same as before.
 const fromHtmx = (req) => req.get('HX-Request') === 'true';
+const sendError = (req, res, { status, message }) => {
+  if (fromHtmx(req)) {
+    res.status(status).send(message);
+    return;
+  }
+  res.status(status).json({ error: message });
+};
 
 export const index = async (req, res) => {
   const location = req.query.location;
@@ -18,7 +25,7 @@ export const index = async (req, res) => {
 };
 
 export const create = async (req, res) => {
-  const result = await divesService.createDive(req.body);
+    const result = await divesService.createDive(req.body, req.user);
 
   if (!result.ok) {
     res.status(result.error.status).json({
@@ -48,4 +55,14 @@ export const show = async (req, res) => {
   }
 
   res.status(200).json(result.value);
+};
+
+export const destroy = async (req, res) => {
+  const { id } = req.params;
+  if (!isValidId(id)) {
+    return sendError(req, res, { status: 400, message: "Invalid dive ID" });
+  }
+  const result = await divesService.deleteDive(id, req.user);
+  if (!result.ok) return sendError(req, res, result.error);
+  res.status(200).send("");
 };
