@@ -242,47 +242,72 @@ We check that in two different places. `requireLogin` is at the route level and 
 ```text
 Browser
    [Note Pages are EJS rendered by the server and styled by public/output.css (Tailwind).]
-   - views/homepage.ejs, views/dives.ejs, views/buddies.ejs, views/partials/*.ejs
+   - views/homepage.ejs, views/dives.ejs, views/buddies.ejs, views/partials/*.ejs, views/login.ejs, views/signup.ejs
    - public/app.js      sends the dive form as JSON
    - public/buddies.js  sends the buddy form as JSON, adds the new buddy card to the page
-   - htmx (loaded on dives.ejs) runs the location search and "Show all" w/o a page reload
+   - htmx (loaded on dives.ejs) runs the delete, location search and "Show all" w/o a page reload
+   - htmx (loaded on buddies.ejs) runs the delete w/o a page reload
+   - After a user logs in, the browser saves the session cookie and sends it in subsequent requests.
    |
-   |-- GET  /                      -> homepage.ejs (HTML page)
-   |-- GET  /stats                 -> plain text
-   |-- GET  /dives                 -> dives.ejs (HTML page)
-   |-- GET  /dives?location=xxx    (htmx, HX-Request: true)
-   |                               -> partials/dive-list.ejs (HTML fragment swapped into #dives)
-   |-- POST /dives                 (app.js)      -> JSON
-   |-- GET  /dives/:id             ("View dive") -> JSON
-   |-- GET  /buddies               -> buddies.ejs (HTML page)
-   |-- POST /buddies               (buddies.js)  -> JSON
-   |-- GET  /output.css, /app.js, /buddies.js, /background.jpg (static files from public/)
+   |
+   |-- GET     /signup                -> signup.ejs (HTML page)
+   |-- POST    /signup                -> Create a new user account
+   |-- GET     /login                 -> login.ejs (HTML page)
+   |-- POST    /login                 -> Verify credentials and create a session
+   |-- POST    /logout                -> Destroy user session
+   |-- GET     /me                    -> Current user information
+   |
+   |-- GET     /                      -> homepage.ejs (HTML page) requireLogin
+   |-- GET     /health                -> JSON (status, uptime; public)
+   |-- GET     /stats                 -> plain text
+   |-- GET     /dives                 -> dives.ejs (HTML page)
+   |-- GET     /dives?location=xxx    (htmx, HX-Request: true)
+   |                                  -> partials/dive-list.ejs (HTML fragment swapped into #dives)
+   |-- POST    /dives                 (app.js)      -> JSON
+   |-- DELETE  /dives/:id             HTMX → Delete dive (owner/admin only)
+   |-- GET     /dives/:id             ("View dive") -> JSON
+   |-- GET     /buddies               -> buddies.ejs (HTML page)
+   |-- POST    /buddies               (buddies.js)  -> JSON
+   |-- DELETE  /buddies/:id           HTMX → Delete buddy (owner/admin only)
+   |-- GET     /output.css, /app.js, /buddies.js, /background.jpg (static files from public/)
    |
    v
 server.js
    - Connects to MongoDB with mongoose.connect
    - Middleware: static files from public/, JSON bodies, form data
-   - Mounts /dives and /buddies routers, then a 404 handler and the error-handling middleware
+   - express-session + MongoStore: Manage sessions and store sessions in MongoDB.
+   - attachUser: Finds the current user based on the Session and sets req.user.
+   - Mounts authRouter
+   - Mounts /dives and /buddies routers(Both protected by requireLogin), then a 404 handler and the error-handling middleware
    |
    v
-Routes                          asyncHandler.js
-   - routes/dives.js     ---->  wraps every controller so a rejected promise
-   - routes/buddies.js          goes to the error-handling middleware
+                              asyncHandler.js  Capture asynchronous errors and pass them to Error-Handling Middleware.
+Routes
+   - routes/auth.js             Handling Signup, Login, Logout, and /me
+   - middleware/requireLogin.js Check req.user to prevent access to protected Routes when not logged in.
+   - routes/dives.js     ---->  wraps every controller so a rejected promise, requireLogin
+   - routes/buddies.js          goes to the error-handling middleware, requireLogin
    |
    v
 Controllers
    - divesController.js    htmx request -> render the partial, otherwise the full page;
                            checks /dives/:id with divesRepository.isValidId
    - buddiesController.js
+   - authController.js     Responsible for handling Signup, Login, Logout, and /me requests.
+   - When Ownership Authorization is required, Dive/Buddy Controllers pass the currently logged-in user's req.user to the Services.
    - Turn service results into HTTP responses (render EJS or send JSON)
    |
    v
 Services                                  Jest tests (__tests__/)
+                                          -authorization.test.js Testing Owner/Admin Authorization of Dive/Buddy Services
    - divesService.js    <-------------    - divesService.test.js
    - buddiesService.js  <-------------    - buddiesService.test.js
    - Validation and business rules          call the services directly
+   - authService.js                       handles password hashing and login credential verification.
+   - Authorization: Dive/Buddy Services check Owner/Admin permissions before modifying or deleting records.
+   - Ownership: New Dive/Buddy records receive ownerId from the logged-in user, not the request body.
    - Format records with DTOs
-     (dtos/diveDto.js, dtos/buddyDto.js)
+     (dtos/diveDto.js, dtos/buddyDto.js, dtos/userDto.js)
                                           - tailwind.test.js renders the views to check
                                             the restyle (no server, no database)
    |
@@ -290,12 +315,16 @@ Services                                  Jest tests (__tests__/)
 Repositories  < - - - - - - - - - - - - - (tests replace repositories with
    - divesRepository.js                    jest.unstable_mockModule, so they
    - buddiesRepository.js                  never reach MongoDB)
+   - usersRepository.js
    - getAll, findById, create, updateById, removeById (one record at a time)
    |
    v
+       - User Model (models/userModel.js): Defines user schema, password hash, and role.
 MongoDB
    - dives collection
    - buddies collection
+   - users collection: Stores user accounts, password hashes, and roles.
+   - sessions collection: Managed by connect-mongo, it stores login sessions.
 
 Response back to the browser:
    GET  (normal)  -> controller renders a full EJS page -> HTML
