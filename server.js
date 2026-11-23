@@ -26,6 +26,15 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Health check
+app.get("/health", (req, res) => {
+  const current_status = {
+    status: "ok",
+    uptime: process.uptime()
+  };
+  res.status(200).json(current_status);
+});
+
 // Session configuration
 app.use(
   session({

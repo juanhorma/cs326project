@@ -16,7 +16,7 @@ const sendError = (req, res, { status, message }) => {
 export const index = async (req, res) => {
   const location = req.query.location;
 
-  const dives = await divesService.listDives(location);
+  const dives = await divesService.listDives(location, req.user);
   if (fromHtmx(req)) {
     res.status(200).render("partials/dive-list", { dives });
     return;
@@ -25,7 +25,7 @@ export const index = async (req, res) => {
 };
 
 export const create = async (req, res) => {
-    const result = await divesService.createDive(req.body, req.user);
+  const result = await divesService.createDive(req.body, req.user);
 
   if (!result.ok) {
     res.status(result.error.status).json({
@@ -45,7 +45,7 @@ export const show = async (req, res) => {
     return;
   }
 
-  const result = await divesService.getDiveById(id);
+  const result = await divesService.getDiveById(id, req.user);
 
   if (!result.ok) {
     res.status(result.error.status).json({

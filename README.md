@@ -183,6 +183,16 @@ Run `npm test`, all 21 tests should pass. Jest runs every test case within the `
 
 # Sprint 4 Changes
 
+## Health Check
+
+- Added GET /health in server.js.
+- It returns HTTP 200 with JSON containing status and uptime, without requiring login.
+### Verification:
+- Follow the previous guidance to run this program, then open a new terminal and navigate to the project directory and run
+```bash
+curl -i http://localhost:3000/health
+```
+
 ## Accessibility Audit Fixes
 
 ### What changed
@@ -205,6 +215,7 @@ Use the keyboard to tab over to the search location form within the dives route.
 
 - Added a maximum date constraint to the dives creation form input element to prevent logging dives in the future.
 - Added a validation rule to divesService to prevent creating a new dive with a date in the future with respect to the user's timezone.
+
 ## Session-Based Authentication
 
 DiveLog now supports user authentication, allowing users to sign up, log in, and logout throughout the browser. Passwords are securely hashed using bcrypt, while `express-session` manages user sessions and `connect-mongo` stores them in MongoDB. This allows users to stay logged in across requests and server restarts while their sessions remain valid. User authentication routes, controllers, service, repository, and middleware were added to manage login sessions and identify the currently logged in user. User roles (member and admin) were also created, and the navigation section was updated to display the user's login status and an option to logout.
@@ -225,6 +236,10 @@ Each dive and buddy now is now controlled by the user who created it. Both have 
 
 We check that in two different places. `requireLogin` is at the route level and stops anyone who isn't logged in (401 or a redirect to `/login`). The ownership check is inside the services, `isOwnerOrAdmin` in `divesService.js` and `buddiesService.js`. `deleteDive`/`deleteBuddy` load the record first, return 404 if it doesn't exist, return 403 if you're not the owner or an admin, and only then delete it. Each dive and buddy card has a Delete button that uses htmx, so a successful delete removes the card without reloading the page.
 
+- Members see only their own dives and buddies.
+- Admins can see all records.
+- Location Search and GET /dives/:id also enforce ownership rules.
+
 ### How to verify
 
 1. Start the app (`npm start`) and sign up as user A. Add a dive and a buddy.
@@ -242,47 +257,72 @@ We check that in two different places. `requireLogin` is at the route level and 
 ```text
 Browser
    [Note Pages are EJS rendered by the server and styled by public/output.css (Tailwind).]
-   - views/homepage.ejs, views/dives.ejs, views/buddies.ejs, views/partials/*.ejs
+   - views/homepage.ejs, views/dives.ejs, views/buddies.ejs, views/partials/*.ejs, views/login.ejs, views/signup.ejs
    - public/app.js      sends the dive form as JSON
    - public/buddies.js  sends the buddy form as JSON, adds the new buddy card to the page
-   - htmx (loaded on dives.ejs) runs the location search and "Show all" w/o a page reload
+   - htmx (loaded on dives.ejs) runs the delete, location search and "Show all" w/o a page reload
+   - htmx (loaded on buddies.ejs) runs the delete w/o a page reload
+   - After a user logs in, the browser saves the session cookie and sends it in subsequent requests.
    |
-   |-- GET  /                      -> homepage.ejs (HTML page)
-   |-- GET  /stats                 -> plain text
-   |-- GET  /dives                 -> dives.ejs (HTML page)
-   |-- GET  /dives?location=xxx    (htmx, HX-Request: true)
-   |                               -> partials/dive-list.ejs (HTML fragment swapped into #dives)
-   |-- POST /dives                 (app.js)      -> JSON
-   |-- GET  /dives/:id             ("View dive") -> JSON
-   |-- GET  /buddies               -> buddies.ejs (HTML page)
-   |-- POST /buddies               (buddies.js)  -> JSON
-   |-- GET  /output.css, /app.js, /buddies.js, /background.jpg (static files from public/)
+   |
+   |-- GET     /signup                -> signup.ejs (HTML page)
+   |-- POST    /signup                -> Create a new user account
+   |-- GET     /login                 -> login.ejs (HTML page)
+   |-- POST    /login                 -> Verify credentials and create a session
+   |-- POST    /logout                -> Destroy user session
+   |-- GET     /me                    -> Current user information
+   |
+   |-- GET     /                      -> homepage.ejs (HTML page) requireLogin
+   |-- GET     /health                -> JSON (status, uptime; public)
+   |-- GET     /stats                 -> plain text
+   |-- GET     /dives                 -> dives.ejs (HTML page)
+   |-- GET     /dives?location=xxx    (htmx, HX-Request: true)
+   |                                  -> partials/dive-list.ejs (HTML fragment swapped into #dives)
+   |-- POST    /dives                 (app.js)      -> JSON
+   |-- DELETE  /dives/:id             HTMX → Delete dive (owner/admin only)
+   |-- GET     /dives/:id             ("View dive") -> JSON
+   |-- GET     /buddies               -> buddies.ejs (HTML page)
+   |-- POST    /buddies               (buddies.js)  -> JSON
+   |-- DELETE  /buddies/:id           HTMX → Delete buddy (owner/admin only)
+   |-- GET     /output.css, /app.js, /buddies.js, /background.jpg (static files from public/)
    |
    v
 server.js
    - Connects to MongoDB with mongoose.connect
    - Middleware: static files from public/, JSON bodies, form data
-   - Mounts /dives and /buddies routers, then a 404 handler and the error-handling middleware
+   - express-session + MongoStore: Manage sessions and store sessions in MongoDB.
+   - attachUser: Finds the current user based on the Session and sets req.user.
+   - Mounts authRouter
+   - Mounts /dives and /buddies routers(Both protected by requireLogin), then a 404 handler and the error-handling middleware
    |
    v
-Routes                          asyncHandler.js
-   - routes/dives.js     ---->  wraps every controller so a rejected promise
-   - routes/buddies.js          goes to the error-handling middleware
+                              asyncHandler.js  Capture asynchronous errors and pass them to Error-Handling Middleware.
+Routes
+   - routes/auth.js             Handling Signup, Login, Logout, and /me
+   - middleware/requireLogin.js Check req.user to prevent access to protected Routes when not logged in.
+   - routes/dives.js     ---->  wraps every controller so a rejected promise, requireLogin
+   - routes/buddies.js          goes to the error-handling middleware, requireLogin
    |
    v
 Controllers
    - divesController.js    htmx request -> render the partial, otherwise the full page;
                            checks /dives/:id with divesRepository.isValidId
    - buddiesController.js
+   - authController.js     Responsible for handling Signup, Login, Logout, and /me requests.
+   - When Ownership Authorization is required, Dive/Buddy Controllers pass the currently logged-in user's req.user to the Services.
    - Turn service results into HTTP responses (render EJS or send JSON)
    |
    v
 Services                                  Jest tests (__tests__/)
+                                          -authorization.test.js Testing Owner/Admin Authorization of Dive/Buddy Services
    - divesService.js    <-------------    - divesService.test.js
    - buddiesService.js  <-------------    - buddiesService.test.js
    - Validation and business rules          call the services directly
+   - authService.js                       handles password hashing and login credential verification.
+   - Authorization: Dive/Buddy Services check Owner/Admin permissions before modifying or deleting records.
+   - Ownership: New Dive/Buddy records receive ownerId from the logged-in user, not the request body.
    - Format records with DTOs
-     (dtos/diveDto.js, dtos/buddyDto.js)
+     (dtos/diveDto.js, dtos/buddyDto.js, dtos/userDto.js)
                                           - tailwind.test.js renders the views to check
                                             the restyle (no server, no database)
    |
@@ -290,12 +330,16 @@ Services                                  Jest tests (__tests__/)
 Repositories  < - - - - - - - - - - - - - (tests replace repositories with
    - divesRepository.js                    jest.unstable_mockModule, so they
    - buddiesRepository.js                  never reach MongoDB)
+   - usersRepository.js
    - getAll, findById, create, updateById, removeById (one record at a time)
    |
    v
+       - User Model (models/userModel.js): Defines user schema, password hash, and role.
 MongoDB
    - dives collection
    - buddies collection
+   - users collection: Stores user accounts, password hashes, and roles.
+   - sessions collection: Managed by connect-mongo, it stores login sessions.
 
 Response back to the browser:
    GET  (normal)  -> controller renders a full EJS page -> HTML
@@ -370,6 +414,10 @@ I took Juan's work on the GET functionality and added the search inside by imple
 ### Sprint 3
 
 I decide to use HTMX to implement the location search and show all. HTMX replaces the traditional HTML GET Form which I implemented in Spring 2. The alternative option would keep using the previous one. The reason I switch to HTMX is the location search only needs the matched dive log and the other elements can remain unchanged, so there is no need to reload the whole page. The cost of continuing to use the HTML GET Form will reload the whole page for each search which will reload the content which no need to change.
+
+### Sprint 4
+
+I decided to make the `/health` health check public and accessible without login because this makes testing easier without login. The only purpose of the health check is to check if the server is up, so no login cookie or token needed. An alternative would be to place `/health` among routes protected by requireLogin. Tradeoff is while this restricts access for unauthorized users, it requires the Monitoring Tools to perform authentication first, increasing the complexity of the detection process.
 
 ## Hope
 

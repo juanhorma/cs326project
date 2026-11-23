@@ -45,9 +45,11 @@ const isOwnerOrAdmin = (buddy, actor) => {
   return actor.role === "admin";
 };
 
-export const listBuddies = async () => {
+export const listBuddies = async (actor) => {
   const buddies = await getAll();
-  return buddies.map(toBuddyDto);
+  const ownedBuddies = buddies.filter(buddy => isOwnerOrAdmin(buddy, actor));
+
+  return ownedBuddies.map(toBuddyDto);
 };
 
 export const createBuddy = async (data, actor) => {
