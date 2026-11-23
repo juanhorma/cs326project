@@ -27,7 +27,7 @@ const buildBuddyListItem = (buddy) => {
   const remove = document.createElement("button");
   remove.type = "button";
   remove.className =
-    "mt-3 px-3 py-1.5 text-sm font-semibold text-rose-200 ring-1 ring-rose-400/50 transition hover:bg-rose-500/20 disabled:opacity-60";
+    "mt-3 px-3 py-1.5 text-sm font-semibold text-rose-200 ring-1 ring-rose-400/50 transition hover:bg-rose-500/20 hover:text-white disabled:opacity-60";
   remove.setAttribute("aria-label", `Delete ${buddy.name}`);
   remove.setAttribute("hx-delete", `/buddies/${buddy.id}`);
   remove.setAttribute("hx-target", "closest li");
@@ -96,4 +96,22 @@ document.body.addEventListener('htmx:beforeSwap', (event) => {
      list.querySelectorAll(".buddy-item").length === 1) {
    emptyMessage.hidden = false;
  }
+});
+
+//This is the addition for fixing the focus issues
+emptyMessage.tabIndex = -1;
+
+document.body.addEventListener("htmx:beforeSwap", (event) => {
+  if (event.detail.requestConfig.verb !== "delete" || event.detail.xhr.status !== 200) return;
+  const card = event.detail.target;
+  const neighbour = card.nextElementSibling || card.previousElementSibling;
+  const focusTarget = neighbour ? neighbour.querySelector("button") : emptyMessage;
+  // htmx removes the card right after this event, so focus on the next tick.
+  setTimeout(() => focusTarget.focus());
+});
+
+document.body.addEventListener("htmx:afterRequest", (event) => {
+  if (event.detail.requestConfig.verb === "delete" && !event.detail.successful) {
+    setTimeout(() => event.detail.elt.focus());
+  }
 });

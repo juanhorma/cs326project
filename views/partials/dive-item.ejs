@@ -39,7 +39,7 @@
         <a href="/dives/<%= dive.id %>" class="font-medium text-cyan-300 underline-offset-4 hover:text-cyan-200 hover:underline">View dive →</a>
         <button
           type="button"
-          class="px-3 py-1.5 text-sm font-semibold text-rose-200 ring-1 ring-rose-400/50 transition hover:bg-rose-500/20 disabled:opacity-60"
+          class="px-3 py-1.5 text-sm font-semibold text-rose-200 ring-1 ring-rose-400/50 transition hover:bg-rose-500/20 hover:text-white disabled:opacity-60"
           aria-label="Delete dive from <%= dive.date %>"
           hx-delete="/dives/<%= dive.id %>"
           hx-target="closest li"

@@ -73,3 +73,26 @@ document.body.addEventListener('htmx:beforeSwap', (event) => {
     document.querySelector("#dives").append(item);
   }
 });
+
+//This should fix the focus & make sure it is in a reasonable place after a delete
+
+document.body.addEventListener("htmx:beforeSwap", (event) => {
+  if (event.detail.requestConfig.verb !== "delete" || event.detail.xhr.status !== 200) return;
+  const card = event.detail.target;
+  const next = card.nextElementSibling?.matches(".dive-item") ? card.nextElementSibling : null;
+  const previous = card.previousElementSibling?.matches(".dive-item") ? card.previousElementSibling : null;
+  const neighbour = next || previous;
+  const focusTarget = neighbour
+    ? neighbour.querySelector("summary")
+    : document.querySelector("#search-message");
+  if (!focusTarget) return;
+  if (!neighbour) focusTarget.tabIndex = -1;
+  // htmx removes the card right after this event, so focus on the next tick.
+  setTimeout(() => focusTarget.focus());
+});
+
+document.body.addEventListener("htmx:afterRequest", (event) => {
+  if (event.detail.requestConfig.verb === "delete" && !event.detail.successful) {
+    setTimeout(() => event.detail.elt.focus());
+  }
+});
