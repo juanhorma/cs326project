@@ -183,6 +183,16 @@ Run `npm test`, all 21 tests should pass. Jest runs every test case within the `
 
 # Sprint 4 Changes
 
+## Health Check
+
+- Added GET /health in server.js.
+- It returns HTTP 200 with JSON containing status and uptime, without requiring login.
+### Verification:
+- Follow the previous guidance to run this program, then open a new terminal and navigate to the project directory and run
+```bash
+curl -i http://localhost:3000/health
+```
+
 ## Accessibility Audit Fixes
 
 ### What changed
@@ -205,6 +215,7 @@ Use the keyboard to tab over to the search location form within the dives route.
 
 - Added a maximum date constraint to the dives creation form input element to prevent logging dives in the future.
 - Added a validation rule to divesService to prevent creating a new dive with a date in the future with respect to the user's timezone.
+
 ## Session-Based Authentication
 
 DiveLog now supports user authentication, allowing users to sign up, log in, and logout throughout the browser. Passwords are securely hashed using bcrypt, while `express-session` manages user sessions and `connect-mongo` stores them in MongoDB. This allows users to stay logged in across requests and server restarts while their sessions remain valid. User authentication routes, controllers, service, repository, and middleware were added to manage login sessions and identify the currently logged in user. User roles (member and admin) were also created, and the navigation section was updated to display the user's login status and an option to logout.
@@ -224,6 +235,10 @@ DiveLog now supports user authentication, allowing users to sign up, log in, and
 Each dive and buddy now is now controlled by the user who created it. Both have an `ownerId` field and the server fills it in from the user who is logged in (`req.user.id`) so that it can't be faked by sending a different `ownerId` in the form. You can only delete/update your own dives/buddies, unless you're an admin, who can delete anyone's.
 
 We check that in two different places. `requireLogin` is at the route level and stops anyone who isn't logged in (401 or a redirect to `/login`). The ownership check is inside the services, `isOwnerOrAdmin` in `divesService.js` and `buddiesService.js`. `deleteDive`/`deleteBuddy` load the record first, return 404 if it doesn't exist, return 403 if you're not the owner or an admin, and only then delete it. Each dive and buddy card has a Delete button that uses htmx, so a successful delete removes the card without reloading the page.
+
+- Members see only their own dives and buddies.
+- Admins can see all records.
+- Location Search and GET /dives/:id also enforce ownership rules.
 
 ### How to verify
 
@@ -399,6 +414,10 @@ I took Juan's work on the GET functionality and added the search inside by imple
 ### Sprint 3
 
 I decide to use HTMX to implement the location search and show all. HTMX replaces the traditional HTML GET Form which I implemented in Spring 2. The alternative option would keep using the previous one. The reason I switch to HTMX is the location search only needs the matched dive log and the other elements can remain unchanged, so there is no need to reload the whole page. The cost of continuing to use the HTML GET Form will reload the whole page for each search which will reload the content which no need to change.
+
+### Sprint 4
+
+I decided to make the `/health` health check public and accessible without login because this makes testing easier without login. The only purpose of the health check is to check if the server is up, so no login cookie or token needed. An alternative would be to place `/health` among routes protected by requireLogin. Tradeoff is while this restricts access for unauthorized users, it requires the Monitoring Tools to perform authentication first, increasing the complexity of the detection process.
 
 ## Hope
 
