@@ -298,12 +298,15 @@ test("createDive rejects an invalid date", async () => {
 
 test("createDive accepts today's date", async () => {
   const todayStr = new Date().toLocaleDateString("en-CA");
-  const result = await createDive({
-    date: todayStr,
-    diveTime: 34,
-    decompressionTime: 0,
-    maxDepth: 30,
-  });
+  const result = await createDive(
+    {
+      date: todayStr,
+      diveTime: 34,
+      decompressionTime: 0,
+      maxDepth: 30,
+    },
+    { id: "alice-id", role: "member" },
+  );
 
   expect(result).toHaveProperty("ok", true);
   expect(result.value).toStrictEqual(
