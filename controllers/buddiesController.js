@@ -11,7 +11,7 @@ const sendError = (req, res, { status, message }) => {
   res.status(status).json({ error: message });
 };
 export const index = async (req, res) => {
-  const buddies = await buddiesService.listBuddies();
+  const buddies = await buddiesService.listBuddies(req.user);
   res.status(200).render("buddies", { buddies });
 };
 

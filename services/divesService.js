@@ -98,17 +98,19 @@ const isOwnerOrAdmin = (dive, actor) => {
   return actor.role === "admin";
 };
 
-export const listDives = async (location) => {
+export const listDives = async (location, actor) => {
   const dives = await getAll();
 
+  const ownedDives = dives.filter(dive => isOwnerOrAdmin(dive, actor));
+
   if (location) {
-    const matchDives = dives.filter((dive) =>
+    const matchDives = ownedDives.filter((dive) =>
       dive.location?.toLowerCase().includes(location.toLowerCase()),
     );
     return matchDives.map(toDiveDto);
   }
 
-  return dives.map(toDiveDto);
+  return ownedDives.map(toDiveDto);
 };
 
 export const createDive = async (data, actor) => {
@@ -124,13 +126,20 @@ export const createDive = async (data, actor) => {
   };
 };
 
-export const getDiveById = async (id) => {
+export const getDiveById = async (id, actor) => {
   const dive = await findById(id);
 
   if (!dive) {
     return {
       ok: false,
       error: { status: 404, message: "Dive not found" },
+    };
+  }
+
+  if (!isOwnerOrAdmin(dive, actor)) {
+    return {
+      ok: false,
+      error: { status: 403, message: "You do not have permission to see this dive" },
     };
   }
 
