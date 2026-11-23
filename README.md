@@ -219,6 +219,24 @@ DiveLog now supports user authentication, allowing users to sign up, log in, and
 6. Log in again, restart the server, and refresh the browser to verify that the MongoDB-backed session remains valid.
 7. To inspect stored sessions, open MongoDB using `mongo-dev`, run `use divelog`, and use show collections to locate the session collection (typically sessions).
 
+## Authorization
+
+Each dive and buddy now is now controlled by the user who created it. Both have an `ownerId` field and the server fills it in from the user who is logged in (`req.user.id`) so that it can't be faked by sending a different `ownerId` in the form. You can only delete/update your own dives/buddies, unless you're an admin, who can delete anyone's.
+
+We check that in two different places. `requireLogin` is at the route level and stops anyone who isn't logged in (401 or a redirect to `/login`). The ownership check is inside the services, `isOwnerOrAdmin` in `divesService.js` and `buddiesService.js`. `deleteDive`/`deleteBuddy` load the record first, return 404 if it doesn't exist, return 403 if you're not the owner or an admin, and only then delete it. Each dive and buddy card has a Delete button that uses htmx, so a successful delete removes the card without reloading the page.
+
+### How to verify
+
+1. Start the app (`npm start`) and sign up as user A. Add a dive and a buddy.
+2. Click Delete on one of them; the card disappears, and it should still be gone after a refresh.
+3. Add another dive as user A, then log out and sign up as user B.
+4. As user B, you can try to access and delete user A's dives, but it will not be possible; after Jingpei's edits, the delete button won't even show up in the first place, and should there ever be a glitch causing the delete button to show up, delete access is still denied by non-owners/admins of the dive.
+5. To check the admin rule, make an account an admin, log in as it, and delete A's dive: it succeeds. In the dev container you can promote an account with:
+   `mongosh "mongodb://dev:devpassword@mongo:27017/divelog?authSource=admin" --eval 'db.users.updateOne({ email: "admin@example.com" }, { $set: { role: "admin" } })'`
+   (use the email you signed up with). The new role takes effect on the next request, since `attachUser` reloads the user each time.
+6. Logged out, `curl -i -X DELETE http://localhost:3000/dives/<any id>` should return 401 and nothing is deleted.
+7. Run `npm test` with MongoDB stopped: all tests pass, including `authorization.test.js`.
+
 # System Diagram
 
 ```text
@@ -362,3 +380,7 @@ For the dive buddies slice I gave buddies their own route, controller, service, 
 ### Sprint 3
 
 For the responsive layout on the Dive Log and Dive Buddies pages, I used a CSS grid that puts the form in a fixed-width sidebar next to the list from the `md:` breakpoint up (`md:grid-cols-[20rem_minmax(0,1fr)]`) and stacks them in one column on phones. The other alternative option was to keep the Sprint 2 layout, with the form on top and the list underneath at every width, and just center it with a max width. That would have needed fewer classes and no breakpoint logic. I chose the sidebar because on a desktop the stacked layout pushes the dive list below seven form fields, so you scroll past the form every time you want to see your dives, while side by side you can add a dive and watch the list update without leaving the form (the sidebar is also `md:sticky`, so it stays in view on a long list). The downside of my choice was extra work and one bug that I accidentally created. There was an extra closing div, and with two columns, every opening and closing tag has to be in the right column, and a stray `</div>` in the search form pushed the dive list out of the right column until Amita spotted it. Because of that I added a test that checks every view closes the tags it opens. The stacked alternative would have avoided that risk but wasted most of a 1280 px screen.
+
+### Sprint 4
+
+For authorization, I had `isOwnerOrAdmin` in `divesService.js` and `buddiesService.js` read the user's role straight from the logged-in user object (`actor.role`, which `attachUser` puts on `req.user`) instead of looking the user up again with `usersRepository.findById`, which is how the class code does it if I remember correctly. The class version was a reasonable alternative to my choice, since it always gets the role straight from the database. I went with `actor.role` because `attachUser` already loads the user from MongoDB on every request, so the role is just as fresh, and a second lookup would add an extra database query to every delete for no real reason. It also kept the services from depending on `usersRepository` at all, which mattered for us because I wrote the authorization code on Thursday before authentication was merged: if `divesService.js` had imported `usersRepository.js` before it existed, the whole service would have failed to load and every dive test would have broken. The class version would also mean mocking a second repository in `authorization.test.js` just to test an admin. The downside of my approach is that the services trust whatever role is on `req.user`, so if `attachUser` were ever changed to cache the user or read it from the session instead of the database, an admin who got demoted could keep admin powers until they logged out.

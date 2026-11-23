@@ -5,3 +5,6 @@ I googled some questions about git commit structure when the parent branch is no
 
 Sprint 3
 I googled an issue with an extra div that was causing it to break because I thought the extra div was in a different file than it really was. The google AI didn't actually tell me anything other than what I already knew, which is that I should probably still keep searching for the extra div. Eventually it occurred to me to check the partials and that's where I found it. 
+
+Sprint 4
+I did not use AI.
