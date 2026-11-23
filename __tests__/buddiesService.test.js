@@ -15,8 +15,7 @@ const { listBuddies, createBuddy } =
 
 const { toBuddyDto } = await import("../dtos/buddyDto.js");
 
-const { getAll, create } =
-  await import("../repositories/buddiesRepository.js");
+const { getAll, create } = await import("../repositories/buddiesRepository.js");
 
 test("listBuddies returns buddy DTO for all existing buddies in the repository", async () => {
   const buddyList = [
@@ -35,7 +34,7 @@ test("listBuddies returns buddy DTO for all existing buddies in the repository",
   ];
   getAll.mockResolvedValueOnce(buddyList);
 
-  const buddies = await listBuddies();
+  const buddies = await listBuddies({ id: "admin-id", role: "admin" });
 
   expect(buddies.length).toBe(2);
   for (let i = 0; i < 2; i++) {
@@ -46,7 +45,7 @@ test("listBuddies returns buddy DTO for all existing buddies in the repository",
 test("listBuddies returns empty list if repository is empty (contains no buddies)", async () => {
   getAll.mockResolvedValueOnce([]);
 
-  const buddies = await listBuddies();
+  const buddies = await listBuddies({ id: "admin-id", role: "admin" });
 
   expect(buddies.length).toBe(0);
 });
@@ -99,10 +98,7 @@ test("createBuddy rejects on non-string certification", async () => {
 
   expect(result).toHaveProperty("ok", false);
   expect(result.error).toHaveProperty("status", 400);
-  expect(result.error).toHaveProperty(
-    "message",
-    "certification must be text",
-  );
+  expect(result.error).toHaveProperty("message", "certification must be text");
 });
 
 test("createBuddy rejects on non-string email or email non-compliant with email pattern", async () => {
@@ -112,10 +108,7 @@ test("createBuddy rejects on non-string email or email non-compliant with email 
   });
   expect(nonStringResult).toHaveProperty("ok", false);
   expect(nonStringResult.error).toHaveProperty("status", 400);
-  expect(nonStringResult.error).toHaveProperty(
-    "message",
-    "email must be text",
-  );
+  expect(nonStringResult.error).toHaveProperty("message", "email must be text");
 
   const nonCompliantResult = await createBuddy({
     name: "John Doe",
@@ -189,7 +182,10 @@ test("createBuddy returns a buddy DTO if all buddy data fields are successful", 
     ...buddyData,
   });
 
-  const result = await createBuddy(buddyData, { id: "alice-id", role: "member" });
+  const result = await createBuddy(buddyData, {
+    id: "alice-id",
+    role: "member",
+  });
 
   expect(result).toHaveProperty("ok", true);
   expect(result.value).toStrictEqual(

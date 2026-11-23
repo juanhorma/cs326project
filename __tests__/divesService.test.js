@@ -1,5 +1,6 @@
 import { expect } from "@jest/globals";
 import { jest } from "@jest/globals";
+const admin = { id: "admin-id", role: "admin" };
 
 jest.unstable_mockModule("../repositories/divesRepository.js", () => ({
   isValidId: jest.fn(() => true),
@@ -43,7 +44,7 @@ test("listDives only returns dives with matching location, case agnostic", async
         location: "azores, third stint",
       },
     ]);
-    const dives = await listDives("Azores");
+    const dives = await listDives("Azores", admin);
     expect(dives.length).toBe(3);
     expect(dives[0].location).toBe("Azores");
     expect(dives[0].id).toBe("213");
@@ -79,7 +80,7 @@ test("listDives returns empty list if no dives match location", async () => {
       location: "azores, third stint",
     },
   ]);
-  const dives = await listDives("Java");
+  const dives = await listDives("Java", admin);
   expect(dives.length).toBe(0);
 });
 
@@ -110,7 +111,7 @@ test("listDives returns full list if no location is provided", async () => {
   ];
   getAll.mockReturnValueOnce(diveList);
 
-  const dives = await listDives(undefined);
+  const dives = await listDives(undefined, admin);
   expect(dives.length).toBe(4);
   for (let i = 0; i < 4; i++) {
     expect(dives[i]).toStrictEqual(toDiveDto(diveList[i]));
@@ -325,7 +326,10 @@ test("createDive returns DTO of compliant dive data", async () => {
     decompressionTime: 0,
     maxDepth: 30,
   };
-  const compliantResult = await createDive(compliantDive, { id: "alice-id", role: "member" })
+  const compliantResult = await createDive(compliantDive, {
+    id: "alice-id",
+    role: "member",
+  });
 
   compliantDive["_id"] = "fake-id";
   expect(compliantResult).toHaveProperty("ok", true);
@@ -355,9 +359,8 @@ test("getDiveById returns a DTO of the existing dive", async () => {
   };
   findById.mockResolvedValueOnce(fakeDive);
 
-  const result = await getDiveById("507f1f77bcf86cd799439011");
+  const result = await getDiveById("507f1f77bcf86cd799439011", admin);
 
   expect(result).toHaveProperty("ok", true);
   expect(result.value).toStrictEqual(toDiveDto(fakeDive));
 });
-
