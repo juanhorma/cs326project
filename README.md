@@ -319,6 +319,7 @@ Services                                  Jest tests (__tests__/)
    - buddiesService.js  <-------------    - buddiesService.test.js
    - Validation and business rules          call the services directly
    - authService.js                       handles password hashing and login credential verification.
+      -- result.js                        provides Ok and Err helpers used by authService.js.
    - Authorization: Dive/Buddy Services check Owner/Admin permissions before modifying or deleting records.
    - Ownership: New Dive/Buddy records receive ownerId from the logged-in user, not the request body.
    - Format records with DTOs
